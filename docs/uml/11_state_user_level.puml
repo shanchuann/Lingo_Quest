@@ -1,0 +1,11 @@
+@startuml state_user_level
+!theme plain
+skinparam shadowing false
+
+[*] --> Lv1_Beginner
+Lv1_Beginner --> Lv2_Learner    : exp >= 100
+Lv2_Learner  --> Lv3_Explorer   : exp >= 300
+Lv3_Explorer --> Lv4_Challenger : exp >= 700
+Lv4_Challenger --> Lv5_Master   : exp >= 1500
+Lv5_Master --> Lv5_Master       : continue earning
+@enduml

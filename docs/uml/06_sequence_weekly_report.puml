@@ -1,0 +1,34 @@
+@startuml sequence_weekly_report
+!theme plain
+skinparam shadowing false
+
+actor Player
+participant "ReportController" as RC
+participant "WeeklyReportService" as RS
+participant "LearningRecordService" as LR
+participant "AiCache" as AC
+participant "DeepSeekClient" as DC
+database "MySQL" as DB
+database "Redis" as RD
+
+Player -> RC : GET /reports/weekly
+RC -> RS : generate()
+RS -> LR : statsByType(userId, since=now-7d)
+LR -> DB : SELECT GROUP BY type ...
+DB --> LR : rows
+LR --> RS : breakdown
+alt totalAnswers == 0
+  RS --> RC : empty + tip
+else
+  RS -> AC : cached("report:userId", promptHash)
+  AC -> RD : GET cache
+  alt miss
+    AC -> DC : chatAsJson(SYS, prompt)
+    DC --> AC : AiSummary
+    AC -> RD : SETEX 24h
+  end
+  AC --> RS : AiSummary
+end
+RS --> RC : WeeklyReport
+RC --> Player : 200
+@enduml

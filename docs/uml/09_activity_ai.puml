@@ -1,0 +1,30 @@
+@startuml activity_ai
+!theme plain
+skinparam shadowing false
+
+start
+:HTTP request hits AiTutorController;
+:Extract userId from JWT;
+if (rate limit ok?) then (no)
+  :Return 429 with friendly message;
+  stop
+endif
+:Compute cache key = sha256(input);
+if (cache hit?) then (yes)
+  :Return cached response;
+  stop
+endif
+:Build prompt with system + user message;
+:WebClient POST /chat/completions;
+if (response within 30s?) then (no)
+  :Return "AI tutor is thinking..." fallback;
+  stop
+endif
+if (response parses as JSON?) then (no)
+  :Return malformed-response error;
+  stop
+endif
+:SETEX Redis cache 24h;
+:Return parsed DTO;
+stop
+@enduml

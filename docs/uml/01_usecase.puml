@@ -1,0 +1,52 @@
+@startuml usecase
+!theme plain
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Player" as P
+actor "AI Service\n(DeepSeek)" as AI <<external>>
+actor "Cache\n(Redis)" as R <<external>>
+
+rectangle "Lingo Quest" {
+  usecase "Register" as UC_Reg
+  usecase "Login" as UC_Login
+  usecase "View Profile" as UC_Profile
+
+  usecase "Start Game" as UC_Start
+  usecase "Roll Dice" as UC_Roll
+  usecase "Answer Question" as UC_Answer
+  usecase "Finish Game" as UC_Finish
+
+  usecase "AI Grammar Check" as UC_Grammar
+  usecase "AI Vocab Coach" as UC_Vocab
+  usecase "AI Weekly Report" as UC_Report
+
+  usecase "View Leaderboard" as UC_Rank
+  usecase "View Achievements" as UC_Ach
+}
+
+P --> UC_Reg
+P --> UC_Login
+P --> UC_Profile
+P --> UC_Start
+P --> UC_Roll
+P --> UC_Answer
+P --> UC_Grammar
+P --> UC_Vocab
+P --> UC_Report
+P --> UC_Rank
+P --> UC_Ach
+
+UC_Roll  ..> UC_Answer : <<include>>
+UC_Answer ..> UC_Ach   : <<extend>> on unlock
+UC_Answer ..> UC_Rank  : <<extend>> score update
+UC_Roll  ..> UC_Finish : <<extend>> on END tile
+
+UC_Grammar --> AI
+UC_Vocab   --> AI
+UC_Report  --> AI
+UC_Grammar --> R : cache
+UC_Vocab   --> R : cache
+UC_Rank    --> R : ZSET
+@enduml

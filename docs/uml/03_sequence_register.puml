@@ -1,0 +1,28 @@
+@startuml sequence_register
+!theme plain
+skinparam shadowing false
+
+actor Player
+participant "UserController" as UC
+participant "UserService" as US
+participant "UserMapper" as UM
+database "MySQL" as DB
+participant "JwtTokenProvider" as JWT
+
+Player -> UC : POST /auth/register {username,email,password}
+UC -> US : register(req)
+US -> UM : selectByUsername()
+UM -> DB : SELECT * FROM user WHERE username=?
+DB --> UM : null
+US -> UM : selectByEmail()
+UM -> DB : SELECT * FROM user WHERE email=?
+DB --> UM : null
+US -> US : passwordEncoder.encode()
+US -> UM : insert(user)
+UM -> DB : INSERT INTO user
+DB --> UM : id
+US -> JWT : issue(userId, username)
+JWT --> US : token
+US --> UC : AuthResponse
+UC --> Player : 200 R<AuthResponse>
+@enduml

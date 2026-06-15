@@ -1,0 +1,46 @@
+@startuml sequence_roll_answer
+!theme plain
+skinparam shadowing false
+
+actor Player
+participant "GameController" as GC
+participant "GameService" as GS
+participant "TileMapper" as TM
+participant "QuestionService" as QS
+participant "LearningRecordService" as LR
+participant "ApplicationEventPublisher" as EVT
+participant "AchievementListener" as AL
+participant "RankingListener" as RL
+database "MySQL" as DB
+database "Redis" as RD
+
+Player -> GC : POST /games/{id}/roll
+GC -> GS : rollDice(gameId)
+GS -> GS : Dice.roll()
+GS -> TM : selectByPosition(pos)
+TM -> DB : SELECT * FROM tile
+DB --> TM : tile
+alt tile needs question
+  GS -> QS : randomByTileType(type)
+  QS -> DB : SELECT random question
+  DB --> QS : question
+  QS --> GS : question
+end
+GS --> GC : RollDiceResponse
+GC --> Player : 200 (question shown)
+
+Player -> GC : POST /games/{id}/answer {questionId,answer}
+GC -> GS : answer(gameId, req)
+GS -> QS : getById(questionId)
+GS -> LR : save(record)
+LR -> DB : INSERT learning_record
+GS -> DB : UPDATE user SET experience, level
+GS -> DB : UPDATE game SET total_score
+GS -> EVT : publish AnswerSubmittedEvent
+EVT -->> AL : onAnswer(e)
+EVT -->> RL : onAnswer(e)
+AL -> DB : INSERT user_achievement (if unlock)
+RL -> RD : ZINCRBY lingo:rank:weekly:* userId score
+GS --> GC : AnswerResponse
+GC --> Player : 200
+@enduml

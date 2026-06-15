@@ -1,0 +1,24 @@
+@startuml state_game
+!theme plain
+skinparam shadowing false
+
+[*] --> CREATED : POST /games
+
+CREATED --> IN_PROGRESS : firstRoll()
+IN_PROGRESS --> IN_PROGRESS : rollDice() / answer()
+IN_PROGRESS --> PAUSED : leavePage()
+PAUSED --> IN_PROGRESS : resume()
+IN_PROGRESS --> FINISHED : reach END tile
+IN_PROGRESS --> ABANDONED : abandon() / new game started
+PAUSED --> ABANDONED : timeout(24h)
+FINISHED --> [*]
+ABANDONED --> [*]
+
+state IN_PROGRESS {
+  [*] --> Idle
+  Idle --> Rolling : rollDice()
+  Rolling --> Awaiting : tile needs question
+  Rolling --> Idle    : tile no question
+  Awaiting --> Idle   : answer submitted
+}
+@enduml

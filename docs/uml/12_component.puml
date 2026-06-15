@@ -1,0 +1,87 @@
+@startuml component
+!theme plain
+skinparam componentStyle rectangle
+skinparam shadowing false
+
+package "Frontend (Vue 3 + Vite)" {
+  [SPA Bundle] as SPA
+  [Pinia Stores] as PINIA
+  [Axios Client] as AXIOS
+}
+
+package "Backend (Spring Boot 3 - Modular Monolith)" {
+  package "Web Layer" {
+    [UserController]
+    [GameController]
+    [AiTutorController]
+    [AchievementController]
+    [RankingController]
+    [ReportController]
+  }
+  package "Application Layer" {
+    [UserService]
+    [GameService]
+    [AiTutorService]
+    [AchievementService]
+    [RankingService]
+    [WeeklyReportService]
+    [QuestionService]
+    [LearningRecordService]
+  }
+  package "Domain Layer" {
+    [Dice]
+    [LevelPolicy]
+    [AnswerSubmittedEvent]
+    [GameFinishedEvent]
+  }
+  package "Infrastructure" {
+    [MyBatis-Plus Mappers]
+    [JwtTokenProvider]
+    [DeepSeekClient]
+    [AiCache]
+    [AiRateLimiter]
+    [RedisTemplate]
+  }
+  [SecurityFilterChain]
+  [GlobalExceptionHandler]
+}
+
+cloud "DeepSeek API" as DS
+database "MySQL 8" as DB
+database "Redis 7" as RD
+
+SPA --> AXIOS
+AXIOS --> [SecurityFilterChain] : Bearer JWT
+[SecurityFilterChain] --> [UserController]
+[SecurityFilterChain] --> [GameController]
+[SecurityFilterChain] --> [AiTutorController]
+[UserController] --> [UserService]
+[GameController] --> [GameService]
+[AiTutorController] --> [AiTutorService]
+[AchievementController] --> [AchievementService]
+[RankingController] --> [RankingService]
+[ReportController] --> [WeeklyReportService]
+[GameService] ..> [AnswerSubmittedEvent] : publishes
+[AchievementService] ..> [AnswerSubmittedEvent] : @EventListener
+[RankingService] ..> [AnswerSubmittedEvent] : @EventListener
+[GameService] --> [Dice]
+[GameService] --> [LevelPolicy]
+[GameService] --> [QuestionService]
+[GameService] --> [LearningRecordService]
+[AiTutorService] --> [AiRateLimiter]
+[AiTutorService] --> [AiCache]
+[AiTutorService] --> [DeepSeekClient]
+[WeeklyReportService] --> [LearningRecordService]
+[WeeklyReportService] --> [AiCache]
+[WeeklyReportService] --> [DeepSeekClient]
+[DeepSeekClient] --> DS
+[MyBatis-Plus Mappers] --> DB
+[RedisTemplate] --> RD
+[AiCache] --> [RedisTemplate]
+[AiRateLimiter] --> [RedisTemplate]
+[RankingService] --> [RedisTemplate]
+[UserService] --> [JwtTokenProvider]
+[UserService] --> [MyBatis-Plus Mappers]
+[GameService] --> [MyBatis-Plus Mappers]
+[AchievementService] --> [MyBatis-Plus Mappers]
+@enduml

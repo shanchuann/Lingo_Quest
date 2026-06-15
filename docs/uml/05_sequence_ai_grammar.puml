@@ -1,0 +1,38 @@
+@startuml sequence_ai_grammar
+!theme plain
+skinparam shadowing false
+
+actor Player
+participant "AiTutorController" as AC
+participant "AiTutorService" as AS
+participant "AiRateLimiter" as RL
+participant "AiCache" as AC2
+participant "DeepSeekClient" as DC
+database "Redis" as RD
+participant "DeepSeek API" as DS
+
+Player -> AC : POST /ai/grammar {sentence}
+AC -> AS : correctGrammar(req)
+AS -> RL : check(userId)
+RL -> RD : INCR lingo:ai:rl:user:minute
+alt over limit
+  RL --> AS : throw 429
+  AS --> AC : BizException
+  AC --> Player : 400
+end
+
+AS -> AC2 : cached("grammar", sentence)
+AC2 -> RD : GET lingo:ai:cache:grammar:<sha>
+alt cache hit
+  RD --> AC2 : json
+  AC2 --> AS : GrammarCheckResponse
+else cache miss
+  AC2 -> DC : chatAsJson(SYS, sentence)
+  DC -> DS : POST /chat/completions
+  DS --> DC : completion
+  DC --> AC2 : GrammarCheckResponse
+  AC2 -> RD : SETEX 24h
+end
+AS --> AC : response
+AC --> Player : 200
+@enduml

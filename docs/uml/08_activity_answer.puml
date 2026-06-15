@@ -1,0 +1,43 @@
+@startuml activity_answer
+!theme plain
+skinparam shadowing false
+
+start
+:Player rolls dice;
+:Compute new position;
+if (tile needs question?) then (yes)
+  :Pick random question by tileType;
+  :Display QuestionModal;
+  :Player submits answer;
+  if (answer matches?) then (correct)
+    :+10 XP, +5 coins;
+  else (wrong)
+    :+2 XP, +1 coin;
+  endif
+  :Insert LearningRecord;
+  :Update User exp/coins/level;
+  :Publish AnswerSubmittedEvent;
+  fork
+    :AchievementListener evaluates rules;
+    if (rule satisfied & not unlocked?) then (yes)
+      :Insert UserAchievement;
+      :Grant achievement reward;
+    endif
+  fork again
+    :RankingListener;
+    :ZINCRBY weekly ZSET;
+  end fork
+else (no)
+  if (tile is LUCKY/TRAP) then (yes)
+    :Apply reward delta to User;
+  endif
+endif
+if (reached END tile?) then (yes)
+  :Set Game status=FINISHED;
+  :Publish GameFinishedEvent;
+  stop
+else (no)
+  :Wait for next roll;
+  stop
+endif
+@enduml

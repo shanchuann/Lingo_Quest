@@ -1,0 +1,110 @@
+@startuml domain
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+class User {
+  - id : Long
+  - username : String
+  - email : String
+  - level : int
+  - experience : int
+  - coins : int
+  + register()
+  + login()
+  + gainExp(int)
+  + levelUp()
+}
+
+class Game {
+  - id : Long
+  - currentPosition : int
+  - roundNum : int
+  - status : GameStatus
+  - totalScore : int
+  + start()
+  + rollDice() : int
+  + moveTo(int)
+  + finish()
+  + abandon()
+}
+
+enum GameStatus {
+  CREATED
+  IN_PROGRESS
+  PAUSED
+  FINISHED
+  ABANDONED
+}
+
+class Board {
+  - tiles : List<Tile>
+  + tileAt(int) : Tile
+}
+
+class Tile {
+  - position : int
+  - tileType : String
+  - rewardExp : int
+  - rewardCoin : int
+  + onLanded(User)
+  + needsQuestion() : boolean
+}
+
+class Question {
+  - id : Long
+  - type : String
+  - content : String
+  - options : List<String>
+  - answer : String
+  - difficulty : int
+  + check(String) : boolean
+}
+
+class LearningRecord {
+  - userId : Long
+  - questionId : Long
+  - gameId : Long
+  - userAnswer : String
+  - isCorrect : boolean
+  - score : int
+}
+
+class Achievement {
+  - id : int
+  - code : String
+  - title : String
+  + tryUnlock(User) : boolean
+}
+
+class UserAchievement {
+  - userId : Long
+  - achievementId : int
+  - unlockedAt : LocalDateTime
+}
+
+class RankingEntry {
+  - userId : Long
+  - score : int
+  - rank : int
+}
+
+class AiTutor {
+  + correctGrammar(String) : Result
+  + coachVocab(String) : Result
+  + weeklyReport(User) : Report
+}
+
+User "1" -- "*" Game        : plays >
+Game "*" -- "1" Board        : on >
+Board "1" *-- "30" Tile      : composed of >
+Tile "*" -- "0..1" Question  : picks >
+User "1" -- "*" LearningRecord
+LearningRecord "*" --> "1" Question
+LearningRecord "*" --> "0..1" Game
+User "*" -- "*" Achievement  : through UserAchievement
+UserAchievement --> User
+UserAchievement --> Achievement
+User "1" -- "*" RankingEntry
+User ..> AiTutor : uses
+@enduml

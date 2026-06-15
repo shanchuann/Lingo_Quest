@@ -1,0 +1,29 @@
+@startuml deployment
+!theme plain
+skinparam shadowing false
+
+node "Player Device" {
+  [Chrome / Edge]
+}
+
+node "App Server (single node)" {
+  node "Docker" {
+    [Nginx :80/443]
+  }
+  node "JVM 21" {
+    [lingo-quest-api.jar :8080]
+  }
+  node "Docker (data plane)" {
+    database "MySQL 8.0\n:3306" as MySQL
+    database "Redis 7\n:6379" as Redis
+  }
+}
+
+cloud "DeepSeek API\napi.deepseek.com:443" as DS
+
+[Chrome / Edge] -down-> [Nginx :80/443] : HTTPS
+[Nginx :80/443] -down-> [lingo-quest-api.jar :8080] : proxy /api/*
+[lingo-quest-api.jar :8080] --> MySQL : JDBC
+[lingo-quest-api.jar :8080] --> Redis : RESP
+[lingo-quest-api.jar :8080] --> DS : HTTPS
+@enduml

@@ -1,0 +1,28 @@
+@startuml collaboration
+!theme plain
+skinparam shadowing false
+
+actor Player
+object ":AiTutorController" as Ctrl
+object ":AiTutorService" as Svc
+object ":AiRateLimiter" as Rl
+object ":AiCache" as Cache
+object ":DeepSeekClient" as Client
+object ":Redis" as Redis
+object ":DeepSeekAPI" as DSAPI
+
+Player -[#0078d4]-> Ctrl    : 1: grammar(req)
+Ctrl   -[#0078d4]-> Svc     : 2: correctGrammar(req)
+Svc    -[#0078d4]-> Rl      : 3: check(userId)
+Rl     -[#0078d4]-> Redis   : 3.1: INCR
+Svc    -[#0078d4]-> Cache   : 4: cached(key)
+Cache  -[#0078d4]-> Redis   : 4.1: GET
+Cache  -[#0078d4]-> Client  : 4.2: chatAsJson()
+Client -[#0078d4]-> DSAPI   : 4.2.1: POST /chat/completions
+DSAPI  -[#0078d4]-> Client  : 4.2.2: JSON
+Client -[#0078d4]-> Cache   : 4.2.3: parsed
+Cache  -[#0078d4]-> Redis   : 4.3: SETEX
+Cache  -[#0078d4]-> Svc     : 5: response
+Svc    -[#0078d4]-> Ctrl    : 6: response
+Ctrl   -[#0078d4]-> Player  : 7: 200 OK
+@enduml
