@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Lingo Quest - architecture description in xADL 2.0 style.
+  Three component-and-connector groups are described:
+    Group A: Browser <-> ApiGateway      (REST over HTTPS)
+    Group B: GameService <-> AiTutorService (in-process + event)
+    Group C: AiTutorService <-> DeepSeekProvider (REST over HTTPS)
+-->
+<xArch xmlns="http://www.ics.uci.edu/pub/arch/xArch/instance.xsd"
+       xmlns:types="http://www.ics.uci.edu/pub/arch/xArch/types.xsd">
+
+  <archStructure>
+
+    <!-- ============================================================
+         GROUP A: Browser <-> ApiGateway
+         ============================================================ -->
+    <component id="WebClient">
+      <description>Vue3 single-page app running in the browser.</description>
+      <interface id="WebClient.Http">
+        <description>Outbound HTTP/JSON interface that calls the backend REST API.</description>
+        <direction>out</direction>
+      </interface>
+    </component>
+
+    <component id="ApiGateway">
+      <description>Spring Boot dispatcher: SecurityFilterChain + GlobalExceptionHandler + controllers.</description>
+      <interface id="ApiGateway.Http">
+        <description>Inbound HTTP/JSON interface accepting Bearer JWT.</description>
+        <direction>in</direction>
+      </interface>
+    </component>
+
+    <connector id="HttpJsonOverTLS">
+      <description>Synchronous request/response connector. Protocol: HTTPS/1.1.
+        Body: application/json. Auth: Authorization: Bearer &lt;jwt&gt;.</description>
+      <role id="HttpJsonOverTLS.Caller"><direction>out</direction></role>
+      <role id="HttpJsonOverTLS.Callee"><direction>in</direction></role>
+    </connector>
+
+    <link id="L_Web2Api_Caller">
+      <point componentRef="WebClient"  interfaceRef="WebClient.Http"/>
+      <point connectorRef="HttpJsonOverTLS" roleRef="HttpJsonOverTLS.Caller"/>
+    </link>
+    <link id="L_Web2Api_Callee">
+      <point connectorRef="HttpJsonOverTLS" roleRef="HttpJsonOverTLS.Callee"/>
+      <point componentRef="ApiGateway" interfaceRef="ApiGateway.Http"/>
+    </link>
+
+
+    <!-- ============================================================
+         GROUP B: GameService <-> AiTutorService (in-process call + async event)
+         ============================================================ -->
+    <component id="GameService">
+      <description>Application-layer use case: rollDice, answer, finishGame.</description>
+      <interface id="GameService.AnswerSubmittedOut">
+        <description>Publishes AnswerSubmittedEvent on every answer.</description>
+        <direction>out</direction>
+      </interface>
+      <interface id="GameService.CallTutor">
+        <description>Direct synchronous call into AiTutorService (used by extension points like Speaking tile).</description>
+        <direction>out</direction>
+      </interface>
+    </component>
+
+    <component id="AiTutorService">
+      <description>Application-layer facade orchestrating the AI infrastructure.</description>
+      <interface id="AiTutorService.Sync">
+        <description>Synchronous JVM method calls correctGrammar/coachVocab.</description>
+        <direction>in</direction>
+      </interface>
+      <interface id="AiTutorService.EventIn">
+        <description>Listens to AnswerSubmittedEvent and GameFinishedEvent via @EventListener.</description>
+        <direction>in</direction>
+      </interface>
+    </component>
+
+    <connector id="SpringEventBus">
+      <description>Asynchronous publish/subscribe connector backed by Spring ApplicationEventPublisher.
+        Delivery is in-VM but logically decoupled.</description>
+      <role id="SpringEventBus.Publisher"><direction>out</direction></role>
+      <role id="SpringEventBus.Subscriber"><direction>in</direction></role>
+    </connector>
+
+    <connector id="JvmMethodCall">
+      <description>Synchronous in-process method invocation. Both ends share the same heap.</description>
+      <role id="JvmMethodCall.Caller"><direction>out</direction></role>
+      <role id="JvmMethodCall.Callee"><direction>in</direction></role>
+    </connector>
+
+    <link id="L_Game2Tutor_Event_Pub">
+      <point componentRef="GameService" interfaceRef="GameService.AnswerSubmittedOut"/>
+      <point connectorRef="SpringEventBus" roleRef="SpringEventBus.Publisher"/>
+    </link>
+    <link id="L_Game2Tutor_Event_Sub">
+      <point connectorRef="SpringEventBus" roleRef="SpringEventBus.Subscriber"/>
+      <point componentRef="AiTutorService" interfaceRef="AiTutorService.EventIn"/>
+    </link>
+    <link id="L_Game2Tutor_Sync_Caller">
+      <point componentRef="GameService" interfaceRef="GameService.CallTutor"/>
+      <point connectorRef="JvmMethodCall" roleRef="JvmMethodCall.Caller"/>
+    </link>
+    <link id="L_Game2Tutor_Sync_Callee">
+      <point connectorRef="JvmMethodCall" roleRef="JvmMethodCall.Callee"/>
+      <point componentRef="AiTutorService" interfaceRef="AiTutorService.Sync"/>
+    </link>
+
+
+    <!-- ============================================================
+         GROUP C: AiTutorService <-> DeepSeekProvider (HTTPS + SSE optional)
+         ============================================================ -->
+    <component id="DeepSeekProvider">
+      <description>External SaaS at api.deepseek.com. OpenAI-compatible /chat/completions endpoint.</description>
+      <interface id="DeepSeekProvider.Completions">
+        <description>HTTPS POST /chat/completions. Authentication: Bearer &lt;api-key&gt;. Optional SSE for streaming.</description>
+        <direction>in</direction>
+      </interface>
+    </component>
+
+    <component id="DeepSeekClient">
+      <description>Reactive WebClient wrapper inside AiTutorService.
+        Adds timeout, JSON parsing, fallback handling.</description>
+      <interface id="DeepSeekClient.OutboundHttps">
+        <description>Outbound HTTPS interface to api.deepseek.com.</description>
+        <direction>out</direction>
+      </interface>
+    </component>
+
+    <connector id="HttpsRest_OpenAICompat">
+      <description>Synchronous (or SSE) REST connector against an OpenAI-compatible Chat Completions API.
+        Quality attributes: latency budget 30s; retry: none; rate-limited upstream by AiRateLimiter.</description>
+      <role id="HttpsRest_OpenAICompat.Caller"><direction>out</direction></role>
+      <role id="HttpsRest_OpenAICompat.Callee"><direction>in</direction></role>
+    </connector>
+
+    <link id="L_DS_Caller">
+      <point componentRef="DeepSeekClient" interfaceRef="DeepSeekClient.OutboundHttps"/>
+      <point connectorRef="HttpsRest_OpenAICompat" roleRef="HttpsRest_OpenAICompat.Caller"/>
+    </link>
+    <link id="L_DS_Callee">
+      <point connectorRef="HttpsRest_OpenAICompat" roleRef="HttpsRest_OpenAICompat.Callee"/>
+      <point componentRef="DeepSeekProvider" interfaceRef="DeepSeekProvider.Completions"/>
+    </link>
+
+  </archStructure>
+
+  <!-- ============================================================
+       Configuration (single deployment instance)
+       ============================================================ -->
+  <configuration id="LingoQuest.Prod">
+    <description>One-node deployment used for course demo.</description>
+    <componentInstance ref="WebClient"        binding="Browser"/>
+    <componentInstance ref="ApiGateway"       binding="JVM:8080"/>
+    <componentInstance ref="GameService"      binding="JVM:8080"/>
+    <componentInstance ref="AiTutorService"   binding="JVM:8080"/>
+    <componentInstance ref="DeepSeekClient"   binding="JVM:8080"/>
+    <componentInstance ref="DeepSeekProvider" binding="https://api.deepseek.com"/>
+    <connectorInstance  ref="HttpJsonOverTLS"      binding="nginx 80/443 -> tomcat 8080"/>
+    <connectorInstance  ref="SpringEventBus"       binding="JVM in-process"/>
+    <connectorInstance  ref="JvmMethodCall"        binding="JVM in-process"/>
+    <connectorInstance  ref="HttpsRest_OpenAICompat" binding="HTTPS 443"/>
+  </configuration>
+
+</xArch>
