@@ -1,47 +1,115 @@
 # Lingo Quest
 
-AI English board-game learning platform — final project for 《软件设计与体系结构》.
+> AI English board-game learning platform — final project for 《软件设计与体系结构》(软件23级 学号尾号 9, 娱乐+教育方向).
+
+![status](https://img.shields.io/badge/status-feature--complete-7c3aed)
+![java](https://img.shields.io/badge/java-21-orange)
+![spring](https://img.shields.io/badge/spring--boot-3.3-green)
+![vue](https://img.shields.io/badge/vue-3.5-42b883)
+![ai](https://img.shields.io/badge/AI-DeepSeek-2563eb)
+
+## Highlights
+
+- **Layered modular monolith** in Spring Boot 3 (Java 21) with domain events bridging the `game`, `achievement` and `ranking` packages — looks like microservices, ships like a monolith.
+- **AI Tutor** powered by DeepSeek (OpenAI-compatible API): grammar correction, vocabulary coaching, and weekly learning report — all guarded by Redis-cached responses, per-user rate limiting, and a 30 s fallback.
+- **30-tile board game**: dice roll, tile event, question challenge, XP / level / coins, achievements via event listeners, Redis-ZSET weekly leaderboard.
+- **GitHub Universe-styled UI**: Vue 3 + Tailwind + shadcn-vue + Lucide icons, deep canvas with gradient glow, zero emojis, dark by default.
 
 ## Stack
 
-- **Frontend**: Vue 3.5 + Vite 6 + TypeScript + Tailwind CSS + shadcn-vue + Lucide
-- **Backend**: Java 21 + Spring Boot 3.3 + MyBatis-Plus + Spring Security 6 + JWT
-- **Data**: MySQL 8, Redis 7
-- **AI**: DeepSeek API (OpenAI-compatible)
-- **Architecture**: Modular monolith, package-per-domain
+| Layer | Tech |
+|---|---|
+| Frontend | Vue 3.5, Vite 6, TypeScript, Tailwind, shadcn-vue, Lucide, Pinia, Axios, ECharts |
+| Backend  | Spring Boot 3.3, Spring Security 6, JJWT, MyBatis-Plus 3.5, SpringDoc OpenAPI |
+| Data     | MySQL 8.0, Redis 7 |
+| AI       | DeepSeek `deepseek-chat` via OpenAI-compatible HTTP |
 
 ## Quick start
 
 ```bash
-# 1. Configure secrets
+# 0. Set secrets
 cp .env.example .env
-# edit .env and fill DEEPSEEK_API_KEY etc.
+# fill DEEPSEEK_API_KEY, JWT_SECRET, etc.
 
-# 2. Start infra
+# 1. Bring up infra
 docker compose -f deployment/docker-compose.yml up -d
+# MySQL auto-loads database/init/*.sql (schema + 30 tiles + 30 questions + 8 achievements)
 
-# 3. Backend
+# 2. Backend
 cd backend
 mvn spring-boot:run
-# Swagger UI: http://localhost:8080/swagger-ui.html
+# Swagger UI: http://localhost:8080/api/swagger-ui.html
 
-# 4. Frontend
+# 3. Frontend
 cd frontend
 pnpm install
 pnpm dev
 # Open http://localhost:5173
 ```
 
-## Layout
+## Project layout
 
 ```
 LingoQuest/
-├── backend/       Spring Boot API
-├── frontend/      Vue 3 SPA
-├── database/      seed data / sample questions
-├── docs/          UML / XADL / ATAM artifacts
-├── deployment/    docker-compose + nginx
-└── .env           secrets (gitignored)
+├── backend/        Spring Boot modular monolith
+│   └── src/main/java/com/lingoquest/
+│       ├── common/        R<T>, BizException, handler, JWT util
+│       ├── config/        security/, redis, mybatis-plus, async, cors
+│       ├── user/          register / login / me
+│       ├── game/          board, dice, answer, events
+│       ├── learning/      questions + records
+│       ├── ai/            tutor controller + service
+│       ├── achievement/   event listener + catalog
+│       ├── ranking/       Redis ZSET weekly + SQL all-time
+│       ├── report/        AI weekly summary
+│       └── infra/ai/      DeepSeekClient, AiCache, AiRateLimiter
+├── frontend/       Vue 3 SPA (Tailwind + shadcn-vue + Lucide)
+├── database/init/  SQL schema + seeds (auto-loaded by MySQL container)
+├── docs/
+│   ├── uml/        13 PlantUML files (usecase/domain/sequence/...)
+│   ├── xadl/       xADL 2.0 description
+│   └── atam-report.md
+└── deployment/
+    └── docker-compose.yml
 ```
 
-See `../项目设计.md` for the full design spec and `../开发计划.md` for the 4-week plan.
+## API surface
+
+| Group | Endpoint | Auth |
+|---|---|---|
+| Auth | `POST /auth/register`, `POST /auth/login` | public |
+| User | `GET /users/me` | JWT |
+| Game | `GET /games/board`, `POST /games`, `GET /games/current`, `POST /games/{id}/roll`, `POST /games/{id}/answer`, `POST /games/{id}/abandon` | JWT |
+| AI | `POST /ai/grammar`, `POST /ai/vocab` | JWT |
+| Achievement | `GET /achievements`, `GET /achievements/mine` | JWT |
+| Ranking | `GET /ranking/weekly`, `GET /ranking/all-time` | JWT |
+| Report | `GET /reports/weekly` | JWT |
+
+Full OpenAPI: `http://localhost:8080/api/v3/api-docs`
+
+## Course deliverables
+
+| Rubric | Where to find it |
+|---|---|
+| 1-1 调研 / 需求 | `../项目设计.md` §1-§2 |
+| 1-2 架构图 | `../项目设计.md` §3 + `docs/uml/12_component.puml`, `13_deployment.puml` |
+| 1-3 4+1 视图 | `../项目设计.md` §4 |
+| 1-4 UML 全套 | `docs/uml/*.puml` (13 files) |
+| 1-5 XADL 2.0 | `docs/xadl/lingo-quest.xml` |
+| 1-6 ATAM | `docs/atam-report.md` |
+| 1-7 实现 | this repo (frontend + backend) |
+| 1-8 问题总结 | `../项目设计.md` §10 + `docs/lessons-learned.md` |
+
+## Screenshots
+
+Run `pnpm dev` and visit:
+- `/` — landing page (GitHub Universe-style hero)
+- `/register` & `/login` — gradient auth cards
+- `/game` — 30-tile board + dice + question modal
+- `/tutor` — grammar fix + vocab coach
+- `/report` — accuracy gauge + AI tutor's note
+- `/ranking`, `/achievements` — leaderboard, badge collection
+
+## License
+
+Course project — for academic use.
