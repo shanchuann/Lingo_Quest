@@ -46,18 +46,30 @@ onMounted(() => {
           </article>
         </div>
 
-        <div class="mt-10 card-surface p-8 text-center">
-          <Dice5 class="mx-auto h-10 w-10 text-accent" />
-          <h2 class="mt-4 text-xl font-medium">The board is being assembled</h2>
-          <p class="mt-2 text-sm text-muted">
-            Game center launches in the next milestone. For now, sharpen your skills with the AI Tutor.
-          </p>
+        <div class="mt-10 grid gap-4 md:grid-cols-2">
+          <RouterLink
+            to="/game"
+            class="card-surface group relative flex items-center gap-4 overflow-hidden p-6 transition hover:border-accent/60 hover:shadow-glow"
+          >
+            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-gradient-brand bg-[length:200%_200%] text-white shadow-glow">
+              <Dice5 class="h-7 w-7" />
+            </div>
+            <div class="flex-1">
+              <div class="font-medium">Start a quest</div>
+              <div class="mt-1 text-sm text-muted">Roll the dice, answer the tile, earn XP.</div>
+            </div>
+          </RouterLink>
           <RouterLink
             to="/tutor"
-            class="mt-6 inline-flex h-10 items-center gap-2 rounded-md bg-gradient-brand bg-[length:200%_200%] px-5 text-sm font-medium text-white shadow-glow transition-[background-position] duration-700 hover:bg-[position:100%_50%]"
+            class="card-surface group relative flex items-center gap-4 overflow-hidden p-6 transition hover:border-accent/60 hover:shadow-glow"
           >
-            <Sparkles class="h-4 w-4" />
-            Open AI Tutor
+            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-border bg-surface-1 text-accent">
+              <Sparkles class="h-7 w-7" />
+            </div>
+            <div class="flex-1">
+              <div class="font-medium">Ask the AI tutor</div>
+              <div class="mt-1 text-sm text-muted">Grammar fixes &amp; vocabulary coaching, on demand.</div>
+            </div>
           </RouterLink>
         </div>
       </div>

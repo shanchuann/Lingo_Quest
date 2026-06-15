@@ -20,10 +20,14 @@ const initial = computed(() => auth.user?.username?.[0]?.toUpperCase() ?? '?')
 
       <nav class="hidden items-center gap-6 text-sm text-muted md:flex">
         <RouterLink class="transition hover:text-foreground" to="/">Home</RouterLink>
-        <RouterLink class="transition hover:text-foreground" to="/tutor">AI Tutor</RouterLink>
-        <RouterLink v-if="auth.isAuthed" class="transition hover:text-foreground" to="/dashboard">
-          Dashboard
-        </RouterLink>
+        <template v-if="auth.isAuthed">
+          <RouterLink class="transition hover:text-foreground" to="/dashboard">Dashboard</RouterLink>
+          <RouterLink class="transition hover:text-foreground" to="/game">Game</RouterLink>
+          <RouterLink class="transition hover:text-foreground" to="/tutor">AI Tutor</RouterLink>
+          <RouterLink class="transition hover:text-foreground" to="/ranking">Leaderboard</RouterLink>
+          <RouterLink class="transition hover:text-foreground" to="/achievements">Achievements</RouterLink>
+          <RouterLink class="transition hover:text-foreground" to="/report">Report</RouterLink>
+        </template>
       </nav>
 
       <div class="flex items-center gap-3">
