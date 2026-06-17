@@ -4,36 +4,140 @@
 
 @layer base {
   :root {
-    color-scheme: dark;
+    color-scheme: light;
+    --c-paper:    oklch(0.965 0.014 92);
+    --c-paper-2:  oklch(0.94 0.014 92);
+    --c-paper-3:  oklch(0.91 0.014 92);
+    --c-ink:      oklch(0.18 0.010 80);
+    --c-ink-soft: oklch(0.36 0.010 80);
+    --c-ink-faint:oklch(0.55 0.010 80);
+    --c-rule:     oklch(0.18 0.010 80);
+    --c-rule-soft:oklch(0.78 0.012 90);
+    --c-pixel-green: oklch(0.72 0.18 145);
   }
 
   html,
   body,
   #app {
-    @apply h-full;
+    height: 100%;
   }
 
   body {
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-  }
-
-  /* GitHub Universe-style background: radial glow over deep canvas */
-  body {
-    background-color: theme('colors.canvas');
-    background-image:
-      radial-gradient(circle at 20% -10%, rgba(124, 58, 237, 0.15), transparent 50%),
-      radial-gradient(circle at 80% 0%, rgba(37, 99, 235, 0.12), transparent 55%);
+    font-family: theme('fontFamily.sans');
+    font-feature-settings: 'ss01', 'ss02', 'cv11';
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    background-color: var(--c-paper);
+    background-image: radial-gradient(oklch(0.18 0.010 80 / 0.06) 0.6px, transparent 0.6px);
+    background-size: 4px 4px;
     background-attachment: fixed;
+    color: var(--c-ink);
   }
+
+  /* The tiny background dots above are very faint due to alpha mix */
+  body::before { content: none; }
+
+  ::selection {
+    background: var(--c-ink);
+    color: var(--c-paper);
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: theme('fontFamily.display');
+    font-feature-settings: 'ss01';
+  }
+
+  hr { border-color: var(--c-rule-soft); }
 }
 
 @layer components {
-  .text-gradient-brand {
-    @apply bg-gradient-brand bg-clip-text text-transparent;
-    background-size: 200% 200%;
+  /* Section eyebrow: "the-board/", "tutor/" — Universe slash style */
+  .label-slash {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0;
+    font-family: theme('fontFamily.mono');
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    text-transform: lowercase;
+    color: var(--c-ink);
+  }
+  .label-slash::after {
+    content: '/';
+    margin-left: 2px;
+    color: var(--c-ink-faint);
   }
 
-  .card-surface {
-    @apply rounded-md border border-border bg-surface/80 backdrop-blur-md;
+  .paper-card {
+    border-radius: theme('borderRadius.md');
+    border: 1px solid var(--c-rule);
+    background: var(--c-paper-2);
   }
+  .paper-quiet {
+    border-radius: theme('borderRadius.md');
+    border: 1px solid var(--c-rule-soft);
+    background: var(--c-paper-2);
+  }
+
+  .btn-ink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: theme('borderRadius.md');
+    background: var(--c-ink);
+    color: var(--c-paper);
+    padding: 0 1.25rem;
+    font-weight: 500;
+    transition: background-color 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn-ink:hover { background: var(--c-ink-soft); }
+
+  .btn-pop {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: theme('borderRadius.md');
+    background: var(--c-pixel-green);
+    color: var(--c-ink);
+    padding: 0 1.25rem;
+    font-weight: 500;
+    transition: background-color 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn-pop:hover { background: oklch(0.84 0.12 155); }
+
+  .btn-bone {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: theme('borderRadius.md');
+    border: 1px solid var(--c-rule);
+    background: var(--c-paper);
+    color: var(--c-ink);
+    padding: 0 1.25rem;
+    font-weight: 500;
+    transition: background-color 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn-bone:hover { background: var(--c-paper-3); }
+
+  .focus-ring:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px var(--c-paper),
+      0 0 0 4px var(--c-ink);
+  }
+
+  .pixel-square {
+    display: inline-block;
+    height: 12px;
+    width: 12px;
+    vertical-align: middle;
+  }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
 }

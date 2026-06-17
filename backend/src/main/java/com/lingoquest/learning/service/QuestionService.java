@@ -33,6 +33,27 @@ public class QuestionService {
         return questionMapper.selectList(null);
     }
 
+    /** Build a 4-choice VOCAB question from a word + 3 distractor meanings,
+     *  persist it (so the answer endpoint can look it up), and return it.
+     *  The tag carries the originating wordId so GameService can sync progress. */
+    public Question createFromWord(Long wordId, String word, String correctMeaning, List<String> distractors) {
+        var options = new java.util.ArrayList<String>(4);
+        options.add(correctMeaning);
+        options.addAll(distractors);
+        java.util.Collections.shuffle(options);
+        Question q = Question.builder()
+                .type("VOCAB")
+                .content("单词「" + word + "」的中文含义是?")
+                .options(options)
+                .answer(correctMeaning)
+                .difficulty(2)
+                .tags("wordbook:" + wordId)
+                .deleted(0)
+                .build();
+        questionMapper.insert(q);
+        return q;
+    }
+
     private static String mapTileToQuestionType(String tileType) {
         return switch (tileType) {
             case "GRAMMAR"   -> "GRAMMAR";

@@ -1,15 +1,17 @@
 @startuml component
 !theme plain
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 13
 skinparam componentStyle rectangle
 skinparam shadowing false
 
 package "Frontend (Vue 3 + Vite)" {
   [SPA Bundle] as SPA
-  [Pinia Stores] as PINIA
+  [Pinia Stores\n(auth + equipped)] as PINIA
   [Axios Client] as AXIOS
 }
 
-package "Backend (Spring Boot 3 - Modular Monolith)" {
+package "Backend (Spring Boot 3 — Modular Monolith)" {
   package "Web Layer" {
     [UserController]
     [GameController]
@@ -17,6 +19,8 @@ package "Backend (Spring Boot 3 - Modular Monolith)" {
     [AchievementController]
     [RankingController]
     [ReportController]
+    [ShopController]
+    [WordBookController]
   }
   package "Application Layer" {
     [UserService]
@@ -27,6 +31,8 @@ package "Backend (Spring Boot 3 - Modular Monolith)" {
     [WeeklyReportService]
     [QuestionService]
     [LearningRecordService]
+    [ShopService]
+    [WordBookService]
   }
   package "Domain Layer" {
     [Dice]
@@ -55,12 +61,17 @@ AXIOS --> [SecurityFilterChain] : Bearer JWT
 [SecurityFilterChain] --> [UserController]
 [SecurityFilterChain] --> [GameController]
 [SecurityFilterChain] --> [AiTutorController]
+[SecurityFilterChain] --> [ShopController]
+[SecurityFilterChain] --> [WordBookController]
 [UserController] --> [UserService]
 [GameController] --> [GameService]
 [AiTutorController] --> [AiTutorService]
 [AchievementController] --> [AchievementService]
 [RankingController] --> [RankingService]
 [ReportController] --> [WeeklyReportService]
+[ShopController] --> [ShopService]
+[WordBookController] --> [WordBookService]
+
 [GameService] ..> [AnswerSubmittedEvent] : publishes
 [AchievementService] ..> [AnswerSubmittedEvent] : @EventListener
 [RankingService] ..> [AnswerSubmittedEvent] : @EventListener
@@ -68,6 +79,9 @@ AXIOS --> [SecurityFilterChain] : Bearer JWT
 [GameService] --> [LevelPolicy]
 [GameService] --> [QuestionService]
 [GameService] --> [LearningRecordService]
+[GameService] --> [WordBookService] : VOCAB tile uses current book
+[GameService] --> [ShopService] : reads buffs (XP_DOUBLE)
+[ShopService] --> [AchievementService] : ACH_UNLOCK card
 [AiTutorService] --> [AiRateLimiter]
 [AiTutorService] --> [AiCache]
 [AiTutorService] --> [DeepSeekClient]
@@ -84,4 +98,6 @@ AXIOS --> [SecurityFilterChain] : Bearer JWT
 [UserService] --> [MyBatis-Plus Mappers]
 [GameService] --> [MyBatis-Plus Mappers]
 [AchievementService] --> [MyBatis-Plus Mappers]
+[ShopService] --> [MyBatis-Plus Mappers]
+[WordBookService] --> [MyBatis-Plus Mappers]
 @enduml

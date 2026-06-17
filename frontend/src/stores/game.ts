@@ -75,5 +75,26 @@ export const useGameStore = defineStore('game', {
     clearAnswerToast() {
       this.lastAnswer = null
     },
+    async useHint() {
+      if (!this.game || !this.pendingQuestion) return null
+      const r = await gameApi.hint(this.game.id, this.pendingQuestion.id)
+      return r.hint
+    },
+    async useSkip() {
+      if (!this.game || !this.pendingQuestion) return
+      const r = await gameApi.skip(this.game.id, this.pendingQuestion.id)
+      this.lastAnswer = r
+      this.pendingQuestion = null
+    },
+    async useRetry() {
+      if (!this.game) return
+      const r = await gameApi.retry(this.game.id)
+      this.lastRoll = r
+      this.diceValue = r.dice
+      this.game.currentPosition = r.toPosition
+      this.game.roundNum += 1
+      this.pendingQuestion = r.question ?? null
+      if (r.finished) this.game.status = 'FINISHED'
+    },
   },
 })

@@ -6,7 +6,7 @@ services:
     container_name: lingo-mysql
     restart: unless-stopped
     ports:
-      - "${MYSQL_PORT:-3306}:3306"
+      - "${MYSQL_PORT:-3307}:3306"
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-lingoquest123}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-lingo_quest}

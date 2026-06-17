@@ -15,7 +15,7 @@ async function load() {
   try {
     report.value = await reportApi.weekly()
   } catch (e: any) {
-    error.value = e?.message ?? 'Failed to generate report'
+    error.value = e?.message ?? '生成报告失败'
   } finally {
     loading.value = false
   }
@@ -33,102 +33,98 @@ const dashOffset = computed(() => {
 
 <template>
   <AppLayout>
-    <section class="container py-10">
+    <section class="container py-12">
       <div class="mx-auto max-w-4xl">
-        <div class="flex items-end justify-between">
+        <header class="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <div class="text-xs uppercase tracking-wider text-muted">AI Weekly Report</div>
-            <h1 class="mt-1 text-2xl font-semibold tracking-tight">This week, in summary</h1>
+            <div class="label-slash">
+              <Sparkles class="mr-1.5 h-3.5 w-3.5" />
+              AI 周报
+            </div>
+            <h1 class="mt-4 font-display text-display-lg font-black leading-[0.98] tracking-tight">
+              这一周,一句话总结。
+            </h1>
           </div>
-          <Button variant="ghost" size="sm" :disabled="loading" @click="load">
+          <Button variant="bone" size="sm" :disabled="loading" @click="load">
             <Loader2 v-if="loading" class="h-3.5 w-3.5 animate-spin" />
             <Sparkles v-else class="h-3.5 w-3.5" />
-            Refresh
+            {{ loading ? '刷新中' : '重新生成' }}
           </Button>
+        </header>
+
+        <div v-if="error" class="mt-6 flex items-start gap-2 rounded-md border-2 border-danger bg-pixel-red/15 p-3 text-[13px] text-ink">
+          <AlertCircle class="mt-0.5 h-4 w-4 shrink-0 text-danger" />
+          <span>{{ error }}</span>
         </div>
 
-        <div v-if="error" class="mt-6 rounded-md border border-danger/40 bg-danger/10 p-3 text-xs text-danger">
-          <AlertCircle class="mr-1 inline h-4 w-4" />
-          {{ error }}
-        </div>
-
-        <div v-if="loading && !report" class="py-16 text-center text-sm text-muted">
-          <Loader2 class="mx-auto mb-2 h-5 w-5 animate-spin" />
-          Crunching numbers and asking the AI tutor…
+        <div v-if="loading && !report" class="py-20 text-center">
+          <Loader2 class="mx-auto mb-3 h-5 w-5 animate-spin text-ink-soft" />
+          <p class="text-[14px] text-ink-soft">数据梳理中,AI 导师正在阅读…</p>
         </div>
 
         <template v-if="report">
-          <!-- Top: gauge + stats -->
-          <div class="mt-6 grid gap-4 md:grid-cols-[260px_1fr]">
-            <div class="card-surface flex items-center justify-center p-6">
+          <!-- Gauge + counters -->
+          <div class="mt-10 grid gap-[2px] overflow-hidden rounded-md border border-rule bg-rule md:grid-cols-[280px_1fr]">
+            <div class="flex items-center justify-center bg-paper p-6">
               <div class="relative">
                 <svg width="160" height="160" viewBox="0 0 160 160">
-                  <defs>
-                    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stop-color="#2563eb" />
-                      <stop offset="50%" stop-color="#7c3aed" />
-                      <stop offset="100%" stop-color="#d946ef" />
-                    </linearGradient>
-                  </defs>
-                  <circle cx="80" cy="80" r="56" stroke="#30363d" stroke-width="10" fill="none" />
+                  <circle cx="80" cy="80" r="56" stroke="oklch(0.78 0.012 90)" stroke-width="10" fill="none" />
                   <circle
-                    cx="80"
-                    cy="80"
-                    r="56"
-                    stroke="url(#g)"
+                    cx="80" cy="80" r="56"
+                    stroke="oklch(0.18 0.010 80)"
                     stroke-width="10"
-                    stroke-linecap="round"
+                    stroke-linecap="butt"
                     fill="none"
                     :stroke-dasharray="circumference"
                     :stroke-dashoffset="dashOffset"
                     transform="rotate(-90 80 80)"
-                    class="transition-all duration-700"
+                    class="transition-all duration-700 ease-out-expo"
                   />
                 </svg>
                 <div class="absolute inset-0 flex flex-col items-center justify-center">
-                  <div class="text-xs uppercase tracking-wider text-muted">Accuracy</div>
-                  <div class="text-3xl font-semibold text-gradient-brand">
-                    {{ report.stats.accuracy.toFixed(1) }}%
+                  <div class="text-[11.5px] text-ink-soft">正确率</div>
+                  <div class="font-display text-[38px] font-black leading-none tracking-tight text-ink">
+                    {{ report.stats.accuracy.toFixed(0) }}%
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="card-surface grid grid-cols-2 gap-4 p-6">
-              <div>
-                <div class="text-xs uppercase tracking-wider text-muted">Answers</div>
-                <div class="mt-1 text-2xl font-semibold">{{ report.stats.totalAnswers }}</div>
+            <div class="grid grid-cols-2 gap-[2px] bg-rule">
+              <div class="bg-paper p-5">
+                <div class="text-[12px] text-ink-soft">答题数</div>
+                <div class="mt-2 font-display text-[32px] font-black leading-none tracking-tight">{{ report.stats.totalAnswers }}</div>
               </div>
-              <div>
-                <div class="text-xs uppercase tracking-wider text-muted">XP gained</div>
-                <div class="mt-1 text-2xl font-semibold">{{ report.stats.xpGained }}</div>
+              <div class="bg-paper p-5">
+                <div class="text-[12px] text-ink-soft">本周经验</div>
+                <div class="mt-2 font-display text-[32px] font-black leading-none tracking-tight">{{ report.stats.xpGained }}</div>
               </div>
-              <div>
-                <div class="text-xs uppercase tracking-wider text-muted text-success">Correct</div>
-                <div class="mt-1 text-2xl font-semibold text-success">{{ report.stats.correctAnswers }}</div>
+              <div class="bg-paper p-5">
+                <div class="text-[12px] text-success">答对</div>
+                <div class="mt-2 font-display text-[32px] font-black leading-none tracking-tight text-success">{{ report.stats.correctAnswers }}</div>
               </div>
-              <div>
-                <div class="text-xs uppercase tracking-wider text-muted text-danger">Wrong</div>
-                <div class="mt-1 text-2xl font-semibold text-danger">{{ report.stats.wrongAnswers }}</div>
+              <div class="bg-paper p-5">
+                <div class="text-[12px] text-danger">答错</div>
+                <div class="mt-2 font-display text-[32px] font-black leading-none tracking-tight text-danger">{{ report.stats.wrongAnswers }}</div>
               </div>
             </div>
           </div>
 
           <!-- By type -->
-          <div v-if="report.by_type.length" class="card-surface mt-4 p-6">
-            <div class="mb-4 flex items-center gap-2 text-xs uppercase tracking-wider text-muted">
-              <Target class="h-3.5 w-3.5 text-accent" />
-              By question type
+          <div v-if="report.by_type.length" class="mt-6 rounded-md border border-rule bg-paper p-6">
+            <div class="label-slash">
+              <Target class="mr-1.5 h-3.5 w-3.5" />
+              按题型拆解
             </div>
-            <div class="space-y-3">
+            <div class="mt-5 space-y-4">
               <div v-for="b in report.by_type" :key="b.type">
-                <div class="flex justify-between text-sm">
+                <div class="flex items-baseline justify-between text-[13.5px]">
                   <span class="font-medium">{{ b.type }}</span>
-                  <span class="font-mono text-muted">{{ b.correct }} / {{ b.total }} · {{ b.accuracy.toFixed(1) }}%</span>
+                  <span class="font-mono text-ink-soft">{{ b.correct }} / {{ b.total }} · {{ b.accuracy.toFixed(0) }}%</span>
                 </div>
-                <div class="mt-1 h-2 overflow-hidden rounded-full bg-surface-1">
+                <div class="mt-1.5 h-2 w-full overflow-hidden border border-rule bg-paper-2">
                   <div
-                    class="h-full bg-gradient-brand bg-[length:200%_200%]"
+                    class="h-full bg-ink transition-[width] duration-700 ease-out-expo"
                     :style="{ width: `${Math.min(100, b.accuracy)}%` }"
                   />
                 </div>
@@ -137,39 +133,50 @@ const dashOffset = computed(() => {
           </div>
 
           <!-- AI summary -->
-          <div class="card-surface mt-4 overflow-hidden p-6">
-            <div class="pointer-events-none absolute -top-20 right-0 h-44 w-72 bg-gradient-radial blur-2xl" />
-            <div class="relative">
-              <div class="mb-3 flex items-center gap-2 text-xs uppercase tracking-wider text-muted">
-                <Sparkles class="h-3.5 w-3.5 text-accent" />
-                AI tutor's note
+          <div class="relative mt-6 overflow-hidden rounded-md border border-rule bg-paper p-6">
+            <div class="absolute right-0 top-0 grid grid-cols-3 gap-[2px]" aria-hidden="true">
+              <span class="h-3 w-3 bg-pixel-green" />
+              <span class="h-3 w-3 bg-pixel-amber" />
+              <span class="h-3 w-3 bg-pixel-pink" />
+              <span class="h-3 w-3 bg-pixel-blue" />
+              <span class="h-3 w-3 bg-pixel-violet" />
+              <span class="h-3 w-3 bg-paper-3" />
+            </div>
+            <div>
+              <div class="label-slash">
+                <Sparkles class="mr-1.5 h-3.5 w-3.5" />
+                导师的话
               </div>
-              <p class="text-sm leading-relaxed">{{ report.ai_summary.praise_zh }}</p>
+              <p class="mt-4 text-[15px] leading-[1.8] text-ink text-pretty">
+                {{ report.ai_summary.praise_zh }}
+              </p>
 
-              <div v-if="report.ai_summary.weak_areas.length" class="mt-4">
-                <div class="text-xs uppercase tracking-wider text-muted">Weak spots</div>
+              <div v-if="report.ai_summary.weak_areas.length" class="mt-6">
+                <div class="text-[12px] text-ink-soft">薄弱点</div>
                 <div class="mt-2 flex flex-wrap gap-2">
                   <span
                     v-for="w in report.ai_summary.weak_areas"
                     :key="w"
-                    class="rounded-full border border-danger/40 bg-danger/10 px-2.5 py-0.5 text-xs text-danger"
+                    class="rounded-sm border border-danger bg-pixel-red/15 px-2.5 py-0.5 text-[12px] text-ink"
                   >{{ w }}</span>
                 </div>
               </div>
 
-              <div class="mt-4">
-                <div class="text-xs uppercase tracking-wider text-muted">Suggestions</div>
-                <ul class="mt-2 space-y-2">
-                  <li v-for="(s, i) in report.ai_summary.suggestions_zh" :key="i" class="flex gap-2 text-sm">
+              <div class="mt-6">
+                <div class="text-[12px] text-ink-soft">建议</div>
+                <ul class="mt-3 space-y-2.5">
+                  <li v-for="(s, i) in report.ai_summary.suggestions_zh" :key="i" class="flex gap-2.5 text-[14.5px] text-ink">
                     <Check class="mt-0.5 h-4 w-4 shrink-0 text-success" />
                     <span>{{ s }}</span>
                   </li>
                 </ul>
               </div>
 
-              <div class="mt-4 inline-flex items-center gap-2 rounded-md border border-accent/40 bg-accent/10 px-3 py-1.5 text-xs text-accent-subtle">
+              <div class="mt-6 inline-flex items-center gap-2 rounded-sm border border-ink bg-pixel-amber/40 px-3 py-2 text-[13px] text-ink">
                 <TrendingUp class="h-3.5 w-3.5" />
-                Focus next week: <span class="text-foreground">{{ report.ai_summary.focus_next_week_zh }}</span>
+                <span class="font-medium">下周聚焦</span>
+                <span class="text-ink-faint">·</span>
+                <span>{{ report.ai_summary.focus_next_week_zh }}</span>
               </div>
             </div>
           </div>

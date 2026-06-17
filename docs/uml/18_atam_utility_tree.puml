@@ -1,0 +1,41 @@
+@startmindmap atam_utility_tree
+!theme plain
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 12
+skinparam shadowing false
+
+* 效用
+** 性能(Performance)
+*** [H,M] 非 AI 接口 P95 < 300 ms (S1)
+*** [H,M] AI P95 < 3 s,缓存 < 50 ms (S2)
+*** [H,L] 移动端 FCP < 1.8 s @ 4G (S15)
+*** [M,M] 棋盘 60 fps,骰子无掉帧 (S16)
+
+** 可用性(Availability)
+*** [H,M] 月度 SLA 99.0% (S3)
+*** [H,M] DeepSeek 不可达时 App 仍可用 (S4)
+*** [M,L] 重启恢复 < 30 s 零丢失 (S5)
+*** [H,M] DB 故障告警 < 60 s (S17)
+
+** 可修改性(Modifiability)
+*** [H,L] 替换 LLM 仅改 1 个 yml (S6)
+*** [H,M] Game/Shop 可抽离为微服务 (S7)
+*** [M,L] 新增词书无需改 schema (S18)
+*** [M,M] 接入 SSO 不影响登录链路 (S19)
+
+** 安全性(Security)
+*** [H,L] 密码 BCrypt 哈希 (S8)
+*** [H,L] 非 /auth/** 默认 401 (S9)
+*** [H,M] AI 10 req/min/user 限流 (S10)
+*** [M,M] 数据导出/删除 30 天响应 (S20)
+
+** 成本可控性(Cost)
+*** [H,M] 单 DAU 月均 < ¥0.5 (S11)
+*** [H,L] AI 缓存命中率 ≥ 60% (S21)
+*** [M,L] 单节点 < 2 vCPU / 4 GB (S22)
+
+** 可测试性(Testability)
+*** [M,L] 领域单元测试 < 1 s (S12)
+*** [M,L] 核心覆盖率 ≥ 70% (S23)
+*** [M,M] 关键路径生产可观测 (S24)
+@endmindmap

@@ -1,0 +1,62 @@
+@startuml vocab_from_book
+!theme plain
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 13
+skinparam shadowing false
+
+actor Player as P
+participant "Game.vue" as SPA
+participant "GameController" as GC
+participant "GameService" as GS
+participant "UserMapper" as UM
+participant "WordMapper" as WM
+participant "QuestionService" as QS
+participant "QuestionMapper" as QM
+participant "UserWordProgressMapper" as UWP
+database "MySQL" as DB
+
+== Roll dice on a VOCAB tile, user has selected a book ==
+P -> SPA : click 「掷骰子」
+SPA -> GC : POST /games/{id}/roll
+GC -> GS : rollDice(gameId)
+GS -> GS : dice = Dice.roll()\nfrom → to
+GS -> UM : selectById(userId)
+UM --> GS : User (currentBookId)
+
+alt currentBookId != null AND tile is VOCAB
+  GS -> WM : pickRandom(bookId)
+  WM --> GS : target Word
+  GS -> WM : 3 distractors\n(other meanings, distinct)
+  WM --> GS : List<Word>
+  GS -> QS : createFromWord(\n   word, meaningZh, distractors)
+  QS -> QM : INSERT Question\n(tags='wordbook', wordId in tags)
+  QM --> QS : Question
+  QS --> GS : Question with id
+else fallback
+  GS -> QS : randomByTileType("VOCAB")
+  QS --> GS : Question from bank
+end
+
+GS --> GC : RollDiceResponse\n(dice, from, to, tile, questionView)
+GC --> SPA : R<RollDiceResponse>
+SPA -> SPA : show QuestionModal
+
+== Answer correctly → sync word progress ==
+P -> SPA : pick option, submit
+SPA -> GC : POST /games/{id}/answer
+GC -> GS : answer(gameId, request)
+GS -> QS : getById(qId)
+QS --> GS : Question (tags contains wordbook + wordId)
+GS -> GS : check answer, compute gain (XP_DOUBLE applied)
+GS -> UM : exp + coin update
+note right of GS
+  If question.tags carries 'wordbook:wordId',
+  upsert user_word_progress(userId, wordId, MASTERED)
+  on correct, LEARNING on wrong.
+end note
+GS -> UWP : upsert(userId, wordId, state)
+UWP -> DB : INSERT ... ON DUPLICATE KEY UPDATE state, count++
+GS --> GC : AnswerResponse
+GC --> SPA : R<AnswerResponse>
+SPA -> SPA : 答对了 / 差一点
+@enduml

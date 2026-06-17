@@ -28,6 +28,12 @@ public class User {
     private Integer experience;
     private Integer coins;
 
+    @TableField("current_book_id")
+    private Integer currentBookId;
+
+    @TableField("xp_double_pending")
+    private Integer xpDoublePending;
+
     @TableLogic
     private Integer deleted;
 

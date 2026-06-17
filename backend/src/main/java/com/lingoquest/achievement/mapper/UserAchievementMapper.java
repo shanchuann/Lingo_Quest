@@ -22,4 +22,11 @@ public interface UserAchievementMapper extends BaseMapper<UserAchievement> {
             ORDER BY ua.unlocked_at DESC
             """)
     List<Map<String, Object>> listUnlocked(@Param("userId") Long userId);
+
+    @Select("""
+            SELECT COUNT(*) FROM user_achievement ua
+              JOIN achievement a ON a.id = ua.achievement_id
+             WHERE ua.user_id = #{userId} AND a.code = #{code}
+            """)
+    int countByCode(@Param("userId") Long userId, @Param("code") String code);
 }

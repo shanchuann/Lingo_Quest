@@ -13,6 +13,14 @@ export const router = createRouter({
     { path: '/ranking',     name: 'ranking',      component: () => import('@/pages/Ranking.vue'),      meta: { requiresAuth: true } },
     { path: '/achievements',name: 'achievements', component: () => import('@/pages/Achievements.vue'), meta: { requiresAuth: true } },
     { path: '/report',      name: 'report',       component: () => import('@/pages/Report.vue'),       meta: { requiresAuth: true } },
+    { path: '/shop',        name: 'shop',         component: () => import('@/pages/Shop.vue'),         meta: { requiresAuth: true } },
+    { path: '/profile',     name: 'profile',      component: () => import('@/pages/Profile.vue'),      meta: { requiresAuth: true } },
+    { path: '/wordbooks',          name: 'wordbooks', component: () => import('@/pages/WordBooks.vue'), meta: { requiresAuth: true } },
+    { path: '/wordbooks/:id(\\d+)', name: 'wordbook',  component: () => import('@/pages/WordBook.vue'),  meta: { requiresAuth: true } },
+    // Public legal & help pages — no auth required.
+    { path: '/terms',   name: 'terms',   component: () => import('@/pages/Terms.vue') },
+    { path: '/privacy', name: 'privacy', component: () => import('@/pages/Privacy.vue') },
+    { path: '/help',    name: 'help',    component: () => import('@/pages/Help.vue') },
     { path: '/:catchAll(.*)', redirect: '/' },
   ],
 })

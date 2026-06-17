@@ -141,6 +141,84 @@
       <point componentRef="DeepSeekProvider" interfaceRef="DeepSeekProvider.Completions"/>
     </link>
 
+
+    <!-- ============================================================
+         GROUP D: ShopService and WordBookService — new bounded contexts
+         that integrate with GameService and AchievementService via the same
+         JVM method-call and Spring event-bus connectors used elsewhere.
+         ============================================================ -->
+    <component id="ShopService">
+      <description>Bounded context for catalog browsing, purchasing, inventory, equip and consume.
+        Owns shop_item + user_inventory tables.</description>
+      <interface id="ShopService.Sync">
+        <description>Synchronous JVM methods: catalog, purchase, use, equip, inventoryOf.</description>
+        <direction>in</direction>
+      </interface>
+      <interface id="ShopService.CallAchievement">
+        <description>Calls AchievementService.unlockManually(userId, code) when an ACH_UNLOCK card is used.</description>
+        <direction>out</direction>
+      </interface>
+      <interface id="ShopService.ReadInventoryForGame">
+        <description>Exposed for GameService to read XP_DOUBLE / HINT / SKIP / RETRY buffs the user has activated.</description>
+        <direction>in</direction>
+      </interface>
+    </component>
+
+    <component id="AchievementService">
+      <description>Bounded context for achievement catalog, unlock detection, and the manual-unlock entrypoint used by the shop accelerator cards.</description>
+      <interface id="AchievementService.Sync">
+        <description>Synchronous JVM method: unlockManually(userId, code).</description>
+        <direction>in</direction>
+      </interface>
+      <interface id="AchievementService.EventIn">
+        <description>Listens to AnswerSubmittedEvent / GameFinishedEvent via @EventListener.</description>
+        <direction>in</direction>
+      </interface>
+    </component>
+
+    <component id="WordBookService">
+      <description>Bounded context for word book catalog, per-word state, selecting a current book, and random-word picking for the Tutor / Game.
+        Owns word_book + word + user_word_progress tables and the user.current_book_id column.</description>
+      <interface id="WordBookService.Sync">
+        <description>Synchronous JVM methods: listBooks, listWords, mark, selectBook, randomFromCurrent.</description>
+        <direction>in</direction>
+      </interface>
+      <interface id="WordBookService.ReadForGame">
+        <description>Exposed for GameService — random word + distractor meanings used to assemble a 4-choice question on VOCAB tiles.</description>
+        <direction>in</direction>
+      </interface>
+    </component>
+
+    <!-- Reuse already-declared connectors: JvmMethodCall + SpringEventBus -->
+
+    <link id="L_Shop2Ach_Caller">
+      <point componentRef="ShopService" interfaceRef="ShopService.CallAchievement"/>
+      <point connectorRef="JvmMethodCall" roleRef="JvmMethodCall.Caller"/>
+    </link>
+    <link id="L_Shop2Ach_Callee">
+      <point connectorRef="JvmMethodCall" roleRef="JvmMethodCall.Callee"/>
+      <point componentRef="AchievementService" interfaceRef="AchievementService.Sync"/>
+    </link>
+
+    <link id="L_Game2Shop_Caller">
+      <point componentRef="GameService" interfaceRef="GameService.CallTutor"/>
+      <point connectorRef="JvmMethodCall" roleRef="JvmMethodCall.Caller"/>
+    </link>
+    <link id="L_Game2Shop_Callee">
+      <point connectorRef="JvmMethodCall" roleRef="JvmMethodCall.Callee"/>
+      <point componentRef="ShopService" interfaceRef="ShopService.ReadInventoryForGame"/>
+    </link>
+
+    <link id="L_Game2Book_Callee">
+      <point connectorRef="JvmMethodCall" roleRef="JvmMethodCall.Callee"/>
+      <point componentRef="WordBookService" interfaceRef="WordBookService.ReadForGame"/>
+    </link>
+
+    <link id="L_Ach2EventBus_Sub">
+      <point connectorRef="SpringEventBus" roleRef="SpringEventBus.Subscriber"/>
+      <point componentRef="AchievementService" interfaceRef="AchievementService.EventIn"/>
+    </link>
+
   </archStructure>
 
   <!-- ============================================================
@@ -154,6 +232,9 @@
     <componentInstance ref="AiTutorService"   binding="JVM:8080"/>
     <componentInstance ref="DeepSeekClient"   binding="JVM:8080"/>
     <componentInstance ref="DeepSeekProvider" binding="https://api.deepseek.com"/>
+    <componentInstance ref="ShopService"        binding="JVM:8080"/>
+    <componentInstance ref="AchievementService" binding="JVM:8080"/>
+    <componentInstance ref="WordBookService"    binding="JVM:8080"/>
     <connectorInstance  ref="HttpJsonOverTLS"      binding="nginx 80/443 -> tomcat 8080"/>
     <connectorInstance  ref="SpringEventBus"       binding="JVM in-process"/>
     <connectorInstance  ref="JvmMethodCall"        binding="JVM in-process"/>

@@ -43,6 +43,12 @@ export interface AnswerResult {
   levelUp: boolean
 }
 
+export interface HintResult {
+  questionId: number
+  hint: string
+  message: string
+}
+
 export const gameApi = {
   board: () => request<TileView[]>({ url: '/games/board', method: 'GET' }),
   current: () => request<GameView>({ url: '/games/current', method: 'GET' }),
@@ -51,4 +57,10 @@ export const gameApi = {
   answer: (id: number, questionId: number, answer: string) =>
     request<AnswerResult>({ url: `/games/${id}/answer`, method: 'POST', data: { questionId, answer } }),
   abandon: (id: number) => request<GameView>({ url: `/games/${id}/abandon`, method: 'POST' }),
+  hint: (id: number, questionId: number) =>
+    request<HintResult>({ url: `/games/${id}/hint`, method: 'POST', params: { questionId } }),
+  skip: (id: number, questionId: number) =>
+    request<AnswerResult>({ url: `/games/${id}/skip`, method: 'POST', params: { questionId } }),
+  retry: (id: number) =>
+    request<RollResult>({ url: `/games/${id}/retry`, method: 'POST' }),
 }

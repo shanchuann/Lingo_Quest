@@ -73,6 +73,11 @@ public class AchievementService {
         return achievementMapper.selectList(null);
     }
 
+    /** Manual unlock entrypoint for the shop accelerator items. */
+    public void unlockManually(Long userId, String code) {
+        tryUnlock(userId, code);
+    }
+
     private void tryUnlock(Long userId, String code) {
         var ach = achievementMapper.selectOne(new LambdaQueryWrapper<Achievement>().eq(Achievement::getCode, code));
         if (ach == null) return;

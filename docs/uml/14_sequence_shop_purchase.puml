@@ -1,0 +1,61 @@
+@startuml shop_purchase
+!theme plain
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+
+actor Player as P
+participant "Shop.vue\n(SPA)" as SPA
+participant "ShopController" as C
+participant "ShopService" as S
+participant "UserMapper" as UM
+participant "ShopItemMapper" as IM
+participant "UserInventoryMapper" as INV
+participant "AchievementService" as ACH
+database "MySQL" as DB
+
+== Buy a consumable / accelerator card ==
+P -> SPA : click 「购买」 on item
+SPA -> C : POST /shop/purchase/{itemId}\nAuthorization: Bearer
+C -> S : purchase(userId, itemId)
+S -> IM : selectById(itemId)
+IM --> S : ShopItem
+S -> UM : selectById(userId)
+UM --> S : User (coins)
+
+alt coins < item.price
+  S --> C : BizException 40002\n金币不足
+else cosmetic already owned
+  S -> INV : selectOne(userId, itemId)
+  INV --> S : existing != null
+  S --> C : BizException 40009\n已拥有
+else OK
+  S -> UM : update user.coins -= price
+  S -> INV : insert / update quantity++
+  S --> C : PurchaseResult(itemId, qty, remainingCoins, msg)
+end
+C --> SPA : R<PurchaseResult>
+SPA -> SPA : auth.user.coins = remainingCoins\nreload inventory
+
+== Use an ACH_UNLOCK accelerator card ==
+P -> SPA : click 「使用」 on inventory item
+SPA -> C : POST /shop/inventory/{itemId}/use
+C -> S : use(userId, itemId)
+S -> IM : selectById(itemId)
+IM --> S : ShopItem (effect=ACH_UNLOCK)
+S -> ACH : countByCode(userId, code)
+ACH --> S : 0 (not yet unlocked)
+S -> ACH : unlockManually(userId, code)
+ACH -> DB : INSERT user_achievement
+ACH -> UM : reward exp + coin
+S -> INV : decrement quantity (delete if 0)
+S --> C : UseResult(itemId, effect, remainingQty, msg)
+C --> SPA : R<UseResult>
+
+note over S
+  Idempotency guard:
+  if ACH already unlocked, refund coins
+  and throw 40010 — keeps user happy.
+end note
+@enduml

@@ -1,6 +1,7 @@
 package com.lingoquest.game.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -21,6 +22,8 @@ public class Game {
     private Long id;
     private Long userId;
     private Integer currentPosition;
+    @TableField("previous_position")
+    private Integer previousPosition;
     private Integer roundNum;
     private String status;
     private Integer totalScore;

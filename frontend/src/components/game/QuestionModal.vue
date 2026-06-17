@@ -1,12 +1,26 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { Check, X, ArrowRight, Loader2 } from 'lucide-vue-next'
+import { Check, X, MoveRight, Loader2, Lightbulb, SkipForward } from 'lucide-vue-next'
 import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
 import type { QuestionView } from '@/api/game'
 
-const props = defineProps<{ question: QuestionView | null; loading: boolean }>()
-const emit = defineEmits<{ submit: [string]; close: [] }>()
+const props = defineProps<{
+  question: QuestionView | null
+  loading: boolean
+  hintCount?: number
+  skipCount?: number
+}>()
+const emit = defineEmits<{
+  submit: [string]
+  close: [];
+  useHint: []
+  useSkip: []
+}>()
+
+const hint = ref<string | null>(null)
+const requestingHint = ref(false)
+const requestingSkip = ref(false)
 
 const selected = ref<string>('')
 const free = ref<string>('')
@@ -16,68 +30,147 @@ watch(
   () => {
     selected.value = ''
     free.value = ''
+    hint.value = null
   },
 )
+
+async function onHint() {
+  requestingHint.value = true
+  try {
+    const evt = new Promise<string | null>((resolve) => {
+      const listener = (e: any) => {
+        window.removeEventListener('lingo:hint', listener)
+        resolve(e.detail?.hint ?? null)
+      }
+      window.addEventListener('lingo:hint', listener as any, { once: true })
+      emit('useHint')
+      // safety timeout
+      window.setTimeout(() => resolve(null), 4000)
+    })
+    const h = await evt
+    if (h) hint.value = h
+  } finally {
+    requestingHint.value = false
+  }
+}
+
+async function onSkip() {
+  requestingSkip.value = true
+  try {
+    emit('useSkip')
+  } finally {
+    requestingSkip.value = false
+  }
+}
 
 function submit() {
   const value = props.question?.options?.length ? selected.value : free.value.trim()
   if (!value) return
   emit('submit', value)
 }
+
+const letters = ['A', 'B', 'C', 'D', 'E', 'F']
+const typeMap: Record<string, string> = {
+  VOCAB: '单词',
+  GRAMMAR: '语法',
+  SPEAKING: '口语',
+  CHALLENGE: '挑战',
+}
 </script>
 
 <template>
   <Transition
-    enter-active-class="transition-opacity duration-200"
+    enter-active-class="transition-opacity duration-200 ease-out"
     enter-from-class="opacity-0"
-    leave-active-class="transition-opacity duration-150"
+    leave-active-class="transition-opacity duration-150 ease-out"
     leave-to-class="opacity-0"
   >
     <div
       v-if="question"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-canvas/80 px-4 backdrop-blur-md"
+      class="fixed inset-0 z-50 flex items-end justify-center bg-ink/30 sm:items-center sm:px-4"
+      @click.self="emit('close')"
     >
-      <div class="card-surface w-full max-w-lg p-6 shadow-glow-lg">
-        <div class="flex items-center justify-between text-xs text-muted">
-          <span class="font-mono uppercase tracking-wider">{{ question.type }} · Lv {{ question.difficulty }}</span>
-          <button class="text-muted transition hover:text-foreground" @click="emit('close')">
+      <div class="w-full max-w-xl rounded-md border-2 border-ink bg-paper shadow-page sm:my-8">
+        <!-- ribbon strip -->
+        <div class="flex items-center justify-between border-b-2 border-ink px-6 py-3 text-[12px]">
+          <span class="text-ink-soft">
+            <span class="text-ink font-medium">{{ typeMap[question.type] ?? question.type }}</span>
+            <span class="mx-2 text-ink-faint">·</span>
+            <span class="font-mono">难度 Lv {{ question.difficulty }}</span>
+          </span>
+          <button
+            class="rounded-sm p-1 text-ink-soft transition-colors hover:text-ink focus-ring"
+            @click="emit('close')"
+            aria-label="关闭"
+          >
             <X class="h-4 w-4" />
           </button>
         </div>
 
-        <h2 class="mt-3 text-lg font-medium leading-snug">
-          {{ question.content }}
-        </h2>
+        <div class="px-6 pb-6 pt-5">
+          <div class="label-slash mb-3">题面</div>
+          <h2 class="font-display text-[26px] font-black leading-[1.15] tracking-tight text-balance text-ink">
+            {{ question.content }}
+          </h2>
 
-        <div v-if="question.options?.length" class="mt-6 space-y-2">
-          <label
-            v-for="opt in question.options"
-            :key="opt"
-            class="flex cursor-pointer items-center gap-3 rounded-md border border-border bg-surface-1/60 p-3 text-sm transition hover:bg-surface-2/80"
-            :class="selected === opt ? 'border-accent shadow-glow' : ''"
-          >
-            <input v-model="selected" type="radio" :value="opt" class="sr-only" />
-            <span
-              class="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-border"
-              :class="selected === opt ? 'border-accent bg-gradient-brand' : ''"
+          <div v-if="question.options?.length" class="mt-7 space-y-2">
+            <label
+              v-for="(opt, i) in question.options"
+              :key="opt"
+              class="grid cursor-pointer grid-cols-[28px_1fr_20px] items-center gap-3 rounded-sm border bg-paper-2 px-3.5 py-3 text-[15px] text-ink transition-colors duration-200 hover:bg-paper-3"
+              :class="selected === opt ? 'border-2 border-ink bg-pixel-green/35' : 'border-rule-soft'"
             >
-              <Check v-if="selected === opt" class="h-3 w-3 text-white" />
-            </span>
-            <span>{{ opt }}</span>
-          </label>
-        </div>
-        <div v-else class="mt-6 space-y-2">
-          <label class="text-xs uppercase tracking-wider text-muted">Type your answer</label>
-          <Input v-model="free" placeholder="Your answer" />
-        </div>
+              <span
+                class="inline-flex h-7 w-7 items-center justify-center rounded-sm border font-mono text-[11px]"
+                :class="selected === opt ? 'border-ink bg-ink text-paper' : 'border-rule-soft bg-paper text-ink-soft'"
+              >{{ letters[i] }}</span>
+              <span>{{ opt }}</span>
+              <input v-model="selected" type="radio" :value="opt" class="sr-only" />
+              <Check
+                v-if="selected === opt"
+                class="h-4 w-4 text-ink"
+              />
+            </label>
+          </div>
+          <div v-else class="mt-7 space-y-2">
+            <label class="label-slash">输入你的答案</label>
+            <Input v-model="free" placeholder="在此输入…" />
+          </div>
 
-        <div class="mt-6 flex items-center justify-end gap-2">
-          <Button variant="ghost" :disabled="loading" @click="emit('close')">Skip</Button>
-          <Button :disabled="loading || (question.options?.length ? !selected : !free)" @click="submit">
-            <Loader2 v-if="loading" class="h-4 w-4 animate-spin" />
-            <ArrowRight v-else class="h-4 w-4" />
-            {{ loading ? 'Submitting…' : 'Submit' }}
-          </Button>
+          <div class="mt-7 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <Button
+                v-if="(hintCount ?? 0) > 0 && !hint"
+                size="sm"
+                variant="bone"
+                :disabled="requestingHint || loading"
+                @click="onHint"
+              >
+                <Loader2 v-if="requestingHint" class="h-3.5 w-3.5 animate-spin" />
+                <Lightbulb v-else class="h-3.5 w-3.5" />
+                提示({{ hintCount }})
+              </Button>
+              <Button
+                v-if="(skipCount ?? 0) > 0"
+                size="sm"
+                variant="bone"
+                :disabled="requestingSkip || loading"
+                @click="onSkip"
+              >
+                <Loader2 v-if="requestingSkip" class="h-3.5 w-3.5 animate-spin" />
+                <SkipForward v-else class="h-3.5 w-3.5" />
+                越格符({{ skipCount }})
+              </Button>
+            </div>
+            <div class="flex items-center gap-2">
+              <Button variant="ghost" :disabled="loading" @click="emit('close')">关闭</Button>
+              <Button :disabled="loading || (question.options?.length ? !selected : !free)" @click="submit">
+                <Loader2 v-if="loading" class="h-4 w-4 animate-spin" />
+                <MoveRight v-else class="h-4 w-4" />
+                {{ loading ? '提交中…' : '提交答案' }}
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

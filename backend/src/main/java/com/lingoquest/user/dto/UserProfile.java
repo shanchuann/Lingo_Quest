@@ -9,10 +9,11 @@ public record UserProfile(
         String avatar,
         Integer level,
         Integer experience,
-        Integer coins
+        Integer coins,
+        Integer currentBookId
 ) {
     public static UserProfile of(User u) {
         return new UserProfile(u.getId(), u.getUsername(), u.getEmail(), u.getAvatar(),
-                u.getLevel(), u.getExperience(), u.getCoins());
+                u.getLevel(), u.getExperience(), u.getCoins(), u.getCurrentBookId());
     }
 }

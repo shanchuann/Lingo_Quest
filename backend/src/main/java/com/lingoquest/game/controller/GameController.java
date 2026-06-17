@@ -53,4 +53,22 @@ public class GameController {
     public R<GameView> abandon(@PathVariable Long id) {
         return R.ok(gameService.abandon(id));
     }
+
+    @Operation(summary = "Use a 提示卷 to reveal a hint for the current question")
+    @PostMapping("/{id}/hint")
+    public R<HintResponse> hint(@PathVariable Long id, @RequestParam Long questionId) {
+        return R.ok(gameService.useHint(id, questionId));
+    }
+
+    @Operation(summary = "Use a 越格符 to skip the current question with no score")
+    @PostMapping("/{id}/skip")
+    public R<AnswerResponse> skip(@PathVariable Long id, @RequestParam Long questionId) {
+        return R.ok(gameService.useSkip(id, questionId));
+    }
+
+    @Operation(summary = "Use a 重掷令 to revert position and roll again")
+    @PostMapping("/{id}/retry")
+    public R<RollDiceResponse> retry(@PathVariable Long id) {
+        return R.ok(gameService.useRetry(id));
+    }
 }

@@ -1,29 +1,41 @@
 @startuml domain
 !theme plain
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 13
 skinparam classAttributeIconSize 0
 skinparam shadowing false
+hide circle
 
+' ─── Core ───────────────────────────────────────────────
 class User {
   - id : Long
   - username : String
   - email : String
+  - avatar : String
   - level : int
   - experience : int
   - coins : int
+  - currentBookId : Integer
+  - xpDoublePending : int
   + register()
   + login()
   + gainExp(int)
   + levelUp()
+  + changePassword(String, String)
+  + updateProfile(email, avatar)
+  + softDelete()
 }
 
 class Game {
   - id : Long
   - currentPosition : int
+  - previousPosition : int
   - roundNum : int
   - status : GameStatus
   - totalScore : int
   + start()
   + rollDice() : int
+  + retryLastRoll()
   + moveTo(int)
   + finish()
   + abandon()
@@ -58,6 +70,7 @@ class Question {
   - options : List<String>
   - answer : String
   - difficulty : int
+  - tags : String
   + check(String) : boolean
 }
 
@@ -95,6 +108,83 @@ class AiTutor {
   + weeklyReport(User) : Report
 }
 
+' ─── Shop (new) ────────────────────────────────────────
+class ShopItem {
+  - id : int
+  - code : String
+  - name : String
+  - category : ShopCategory
+  - effect : ShopEffect
+  - price : int
+  - consumable : boolean
+  - payload : Map<String,Object>
+}
+
+enum ShopCategory {
+  FUNCTIONAL
+  COSMETIC
+  ACCELERATOR
+}
+
+enum ShopEffect {
+  HINT
+  RETRY
+  SKIP
+  XP_DOUBLE
+  DICE_SKIN
+  BOARD_THEME
+  AVATAR_FRAME
+  ACH_UNLOCK
+}
+
+class UserInventoryItem {
+  - userId : Long
+  - itemId : int
+  - quantity : int
+  - equipped : boolean
+  - acquiredAt : LocalDateTime
+  + use()
+  + equip(boolean)
+}
+
+' ─── Word book (new) ───────────────────────────────────
+class WordBook {
+  - id : int
+  - code : String
+  - name : String
+  - level : String
+  - coverColor : String
+  - totalWords : int
+}
+
+class Word {
+  - id : Long
+  - bookId : int
+  - word : String
+  - phonetic : String
+  - partOfSpeech : String
+  - meaningZh : String
+  - meaningEn : String
+  - exampleEn : String
+  - difficulty : int
+}
+
+class UserWordProgress {
+  - userId : Long
+  - wordId : Long
+  - state : WordState
+  - reviewedCount : int
+  - correctCount : int
+  - nextReviewAt : LocalDateTime
+}
+
+enum WordState {
+  NEW
+  LEARNING
+  MASTERED
+}
+
+' ─── Relations ─────────────────────────────────────────
 User "1" -- "*" Game        : plays >
 Game "*" -- "1" Board        : on >
 Board "1" *-- "30" Tile      : composed of >
@@ -107,4 +197,14 @@ UserAchievement --> User
 UserAchievement --> Achievement
 User "1" -- "*" RankingEntry
 User ..> AiTutor : uses
+
+User "*" -- "*" ShopItem : through UserInventoryItem
+UserInventoryItem --> User
+UserInventoryItem --> ShopItem
+
+User "0..1" --> "0..1" WordBook : current >
+WordBook "1" *-- "*" Word : contains >
+User "*" -- "*" Word : through UserWordProgress
+UserWordProgress --> User
+UserWordProgress --> Word
 @enduml

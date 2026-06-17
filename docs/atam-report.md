@@ -42,8 +42,14 @@ Utility
 │   └─ [H,M] AI endpoints throttled to 10 req/min/user                 (S9)
 ├─ Testability
 │   └─ [M,L] Domain logic (Dice / LevelPolicy) unit-testable in <1 s   (S10)
-└─ Usability
-    └─ [M,L] First-time user can roll the dice in < 30 s after login   (S11)
+├─ Usability
+│   └─ [M,L] First-time user can roll the dice in < 30 s after login   (S11)
+└─ Domain integration
+    ├─ [H,M] Shop purchase is atomic with coin debit                   (S12)
+    ├─ [H,L] Accelerator items are idempotent w.r.t. already-unlocked  (S13)
+    ├─ [H,L] VOCAB tiles draw from user's current word book            (S14)
+    ├─ [M,L] Cosmetic equip reflects in game within the same session   (S15)
+    └─ [M,L] First cosmetic purchase auto-equips                       (S16)
 ```
 Notation: `[Business importance, Technical risk]` — H=high, M=medium, L=low.
 
@@ -62,6 +68,11 @@ Notation: `[Business importance, Technical risk]` — H=high, M=medium, L=low.
 | S9 | Token spam | Same user calls `/ai/grammar` 11x in 1 minute | 11th call returns 429 | AiRateLimiter Redis token bucket |
 | S10 | Domain unit test | `mvn test` on `LevelPolicy` | Completes in &lt; 1 s, no Spring context | Pure Java, no Spring dependencies |
 | S11 | Onboarding latency | Brand-new user → register → first roll | &lt; 30 s end-to-end | Persisted JWT, single-form register, direct redirect to `/dashboard` then `/game` |
+| S12 | Shop purchase atomicity | User spends last 30 coins on a 30-coin item; concurrent request also tries to spend | Exactly one purchase succeeds; second is rejected with 40002 / coins still ≥ 0 | `@Transactional` boundary around `coins -= price` + `INSERT inventory`; row-level locking on `user.id` |
+| S13 | Accelerator idempotency | User buys "词海速记" but already has VOCAB_MASTER unlocked, then clicks 使用 | Coins refunded, item not consumed, friendly error 40010 | Pre-check `userAchievementMapper.countByCode` before consume; reverse the coin debit |
+| S14 | Word-book influence on game | User selects CET-4 then rolls onto a VOCAB tile | Generated question's options come from CET-4 words | `GameService.rollDice` reads `user.currentBookId`, falls back to question bank if null |
+| S15 | Cosmetic equip propagation | User equips a dice skin in Shop, immediately opens Game | Game's `<Dice>` renders the new skin without a hard reload | Equip endpoint updates `user_inventory.equipped`; Pinia store calls `auth.refreshEquipped()`; Dice reads from store |
+| S16 | First-time cosmetic UX | User buys a dice skin, expects it to apply | Cosmetic auto-equips on first purchase, replacing other skins of the same effect | `ShopService.purchase` sets `equipped=1` when `existing == null && !consumable` |
 
 ## 5. Risks, sensitivity points, and tradeoffs
 
@@ -93,6 +104,10 @@ Notation: `[Business importance, Technical risk]` — H=high, M=medium, L=low.
 | AD-03 | Spring `ApplicationEvent` for cross-module integration | Lets `game` stay ignorant of `achievement`/`ranking`; makes future split easy | Direct method calls (couples modules), message broker (overkill for monolith) |
 | AD-04 | Redis ZSET for weekly leaderboard | O(log N) inserts/queries, atomic ranking, decoupled from MySQL load | SQL `ORDER BY` (slow under writes), in-memory map (lost on restart) |
 | AD-05 | shadcn-vue + Tailwind + Lucide for UI | Matches GitHub Universe aesthetic; no emoji, no Element Plus bloat | Element Plus (admin look), Vuetify (Material look) |
+| AD-06 | `shop` is its own package alongside `game` / `achievement` | Same modular-monolith mindset — purchase, inventory, equip are bounded context; future extraction is one Maven module away | Mixing into `user` (concept bleed), in-memory shop (no persistence) |
+| AD-07 | Word book questions are generated on the fly (in-session table rows) | Reuses the existing `question` table + answer endpoint without a parallel pipeline | Two answer endpoints (more code), pre-generate every word as a question (table bloat from day 1) |
+| AD-08 | XP_DOUBLE buff is a `user.xp_double_pending` column rather than a Redis flag | Survives JVM restart; rare event; single source of truth in MySQL | Redis flag (lost on restart), in-memory Spring bean (lost on restart, not multi-instance) |
+| AD-09 | Accelerator card refund on already-unlocked achievement | Trust-preserving UX; one extra mapper call cheap | Silent no-op (confusing), reject before consume (still confusing without refund) |
 
 ## 7. Conclusion
 

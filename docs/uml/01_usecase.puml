@@ -1,5 +1,7 @@
 @startuml usecase
 !theme plain
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 13
 left to right direction
 skinparam packageStyle rectangle
 skinparam shadowing false
@@ -9,26 +11,49 @@ actor "AI Service\n(DeepSeek)" as AI <<external>>
 actor "Cache\n(Redis)" as R <<external>>
 
 rectangle "Lingo Quest" {
+  ' --- Account ---
   usecase "Register" as UC_Reg
   usecase "Login" as UC_Login
-  usecase "View Profile" as UC_Profile
+  usecase "View / Edit Profile" as UC_Profile
+  usecase "Change Password" as UC_PW
+  usecase "View Personal Stats" as UC_Stats
+  usecase "Delete Account" as UC_Del
 
+  ' --- Core game ---
   usecase "Start Game" as UC_Start
   usecase "Roll Dice" as UC_Roll
   usecase "Answer Question" as UC_Answer
   usecase "Finish Game" as UC_Finish
 
+  ' --- AI tutor ---
   usecase "AI Grammar Check" as UC_Grammar
   usecase "AI Vocab Coach" as UC_Vocab
   usecase "AI Weekly Report" as UC_Report
 
+  ' --- Social ---
   usecase "View Leaderboard" as UC_Rank
   usecase "View Achievements" as UC_Ach
+
+  ' --- Shop (new) ---
+  usecase "Browse Shop" as UC_Shop
+  usecase "Purchase Item" as UC_Buy
+  usecase "Equip Cosmetic" as UC_Equip
+  usecase "Use Consumable" as UC_Use
+
+  ' --- Word book (new) ---
+  usecase "Browse Word Books" as UC_Books
+  usecase "Select Current Book" as UC_Pick
+  usecase "Mark Word State" as UC_Mark
+  usecase "Random Word From Book" as UC_Pull
 }
 
 P --> UC_Reg
 P --> UC_Login
 P --> UC_Profile
+P --> UC_PW
+P --> UC_Stats
+P --> UC_Del
+
 P --> UC_Start
 P --> UC_Roll
 P --> UC_Answer
@@ -38,14 +63,32 @@ P --> UC_Report
 P --> UC_Rank
 P --> UC_Ach
 
+P --> UC_Shop
+P --> UC_Buy
+P --> UC_Equip
+P --> UC_Use
+
+P --> UC_Books
+P --> UC_Pick
+P --> UC_Mark
+P --> UC_Pull
+
+' --- Existing flow relations ---
 UC_Roll  ..> UC_Answer : <<include>>
 UC_Answer ..> UC_Ach   : <<extend>> on unlock
 UC_Answer ..> UC_Rank  : <<extend>> score update
 UC_Roll  ..> UC_Finish : <<extend>> on END tile
 
+' --- New flow relations ---
+UC_Buy   ..> UC_Equip  : <<extend>> first cosmetic auto-equips
+UC_Use   ..> UC_Ach    : <<extend>> ACH_UNLOCK card
+UC_Roll  ..> UC_Pull   : <<extend>> VOCAB tile + selected book
+UC_Answer ..> UC_Mark  : <<extend>> wordbook question correct
+
 UC_Grammar --> AI
 UC_Vocab   --> AI
 UC_Report  --> AI
+UC_Pull    --> UC_Vocab : reuse coach
 UC_Grammar --> R : cache
 UC_Vocab   --> R : cache
 UC_Rank    --> R : ZSET

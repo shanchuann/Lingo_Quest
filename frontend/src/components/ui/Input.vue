@@ -7,6 +7,7 @@ defineProps<{
   placeholder?: string
   autocomplete?: string
   name?: string
+  id?: string
   disabled?: boolean
 }>()
 defineEmits<{ 'update:modelValue': [string] }>()
@@ -14,6 +15,7 @@ defineEmits<{ 'update:modelValue': [string] }>()
 
 <template>
   <input
+    :id="id"
     :type="type ?? 'text'"
     :value="modelValue"
     :placeholder="placeholder"
@@ -21,9 +23,9 @@ defineEmits<{ 'update:modelValue': [string] }>()
     :name="name"
     :disabled="disabled"
     :class="cn(
-      'flex h-10 w-full rounded-md border border-border bg-surface/80 px-3 py-2 text-sm text-foreground placeholder:text-muted',
-      'transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40',
-      'disabled:cursor-not-allowed disabled:opacity-60',
+      'flex h-11 w-full rounded-md border border-rule bg-paper px-3.5 text-[15px] text-ink placeholder:text-ink-faint',
+      'transition-colors duration-200 focus:bg-paper focus:outline-none focus:ring-2 focus:ring-ink focus:ring-offset-2 focus:ring-offset-paper',
+      'disabled:cursor-not-allowed disabled:opacity-55',
     )"
     @input="(e) => $emit('update:modelValue', (e.target as HTMLInputElement).value)"
   />

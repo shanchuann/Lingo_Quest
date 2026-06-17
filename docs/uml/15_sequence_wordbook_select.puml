@@ -1,0 +1,43 @@
+@startuml wordbook_select
+!theme plain
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 13
+skinparam shadowing false
+
+actor Player as P
+participant "WordBooks.vue\n(SPA)" as SPA
+participant "WordBookController" as C
+participant "WordBookService" as S
+participant "WordBookMapper" as WBM
+participant "UserMapper" as UM
+database "MySQL" as DB
+
+== List word books with personal progress ==
+P -> SPA : open /wordbooks
+SPA -> C : GET /wordbooks
+C -> S : listBooks(userId)
+S -> WBM : listWithProgress(userId)
+WBM -> DB : SELECT wb.*,\n  COUNT(p.state='MASTERED'),\n  COUNT(p.state='LEARNING')\n FROM word_book wb LEFT JOIN ...
+DB --> WBM : rows
+WBM --> S : List<Map>
+S --> C : List<Map>
+C --> SPA : R<List<Map>>
+SPA -> SPA : group by level, render cards
+
+== Set as current book ==
+P -> SPA : click 「设为当前」 on a book
+SPA -> C : POST /wordbooks/select?bookId=N
+C -> S : selectBook(userId, bookId)
+S -> WBM : selectById(bookId) → exists
+S -> UM : UPDATE user SET current_book_id=N
+UM --> S : ok
+S --> C : ok
+C --> SPA : R<void>
+SPA -> SPA : auth.user.currentBookId = N\nshow toast 已选定
+
+note over P, S
+  Setting the current book changes the
+  next VOCAB tile question source — see
+  16_sequence_vocab_from_book.puml.
+end note
+@enduml

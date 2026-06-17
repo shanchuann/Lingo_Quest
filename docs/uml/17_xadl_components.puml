@@ -1,0 +1,76 @@
+@startuml xadl_components
+!theme plain
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam componentStyle uml2
+
+' xADL 2.0 描述的可视化:把 lingo-quest.xml 里的 component / connector / link
+' 翻译成 UML 构件图 — 接口用棒棒糖/插座表示,连接件用菱形矩形表示。
+
+skinparam component {
+  BackgroundColor #F7F3E9
+  BorderColor    #14110D
+  FontStyle      bold
+}
+skinparam interface {
+  BackgroundColor #4CC157
+  BorderColor    #14110D
+}
+skinparam package {
+  BackgroundColor #FBFAF4
+  BorderColor    #3F3D38
+  FontStyle      italic
+}
+
+package "Group A: Browser ↔ ApiGateway" as GA {
+  [WebClient] as A1
+  [ApiGateway] as A2
+  rectangle "<<connector>>\nHttpJsonOverTLS\n(HTTPS/JSON + JWT)" as CONA #FFD27A
+  A1 -down-> CONA : interface\nWebClient.Http (out)
+  CONA -down-> A2 : interface\nApiGateway.Http (in)
+}
+
+package "Group B: Game ↔ AiTutor (in-process + event)" as GB {
+  [GameService] as B1
+  [AiTutorService] as B2
+  rectangle "<<connector>>\nSpringEventBus\n(pub/sub)" as CONB1 #FFD27A
+  rectangle "<<connector>>\nJvmMethodCall\n(同步)" as CONB2 #FFD27A
+  B1 -down-> CONB1 : AnswerSubmittedOut (out)
+  CONB1 -down-> B2 : EventIn (in)
+  B1 -right-> CONB2 : CallTutor (out)
+  CONB2 -right-> B2 : Sync (in)
+}
+
+package "Group C: AiTutor ↔ DeepSeek (HTTPS)" as GC {
+  [DeepSeekClient] as C1
+  cloud "DeepSeekProvider\n(api.deepseek.com)" as C2
+  rectangle "<<connector>>\nHttpsRest_OpenAICompat\n(REST,可选 SSE)" as CONC #FFD27A
+  C1 -down-> CONC : OutboundHttps (out)
+  CONC -down-> C2 : Completions (in)
+}
+
+package "Group D: Shop ↔ Achievement ↔ WordBook" as GD {
+  [ShopService] as D1
+  [AchievementService] as D2
+  [WordBookService] as D3
+  rectangle "<<connector>>\nJvmMethodCall (同步)" as COND #FFD27A
+  D1 -down-> COND : unlockManuallyOut (out)
+  COND -down-> D2 : unlockIn (in)
+  D3 -right-> COND : pickRandomOut (out)
+}
+
+' 三组之间的关系
+GA -[hidden]down- GB
+GB -[hidden]down- GC
+GC -[hidden]down- GD
+
+note bottom of GA
+  对应 xADL <configuration> 实例 LingoQuest.Prod:
+  • WebClient   binding="Browser"
+  • ApiGateway  binding="JVM:8080"
+  • DeepSeek    binding="https://api.deepseek.com"
+  • HTTPS 连接件 binding="nginx 80/443 → tomcat 8080"
+end note
+
+@enduml

@@ -48,7 +48,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint((req, res, e) -> writeJson(res, 401, R.fail(40100, "Unauthorized")))
                 .accessDeniedHandler((req, res, e) -> writeJson(res, 403, R.fail(40300, "Forbidden")))
             )
-            .addFilterBefore(corsFilter, JwtAuthFilter.class)
+            .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
