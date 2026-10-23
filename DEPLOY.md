@@ -303,7 +303,8 @@ Vercel 已和 GitHub 绑定:push 到默认分支自动生产部署,PR 自动生�
 | 首页正常,直接访问/刷新 `/game` 404 | SPA 路由缺 fallback | 确认 `frontend/vercel.json` 存在且含 `/(.*) → /index.html`;Root Directory 必须是 `frontend` |
 | 页面能开,接口全部 502 | vercel.json 里还是占位域名 / Railway 服务挂了 / 没生成域名 | 换成真实域名;看 Railway Deploy Logs |
 | 接口 404(不是 502) | 代理路径少了 `/api` | destination 必须是 `https://host/api/:path*`(`/` 也要) |
-| CORS 报错 | 你改成前端直连后端了,而后端 `CorsConfig` 只放行 `localhost` | 回到代理方案;或把 `https://*.vercel.app` 加进 `allowedOriginPatterns` |
+| 接口返回 403 `Invalid CORS request` | Vercel 的 `/api` rewrite 会把浏览器的 `Origin` 头转发给后端,后端默认只放行 localhost 时就会 403 | 当前代码默认已允许 `https://*.vercel.app`;用自定义域名时加后端变量 `CORS_ALLOWED_ORIGINS=https://your-domain.com` 后重新部署 |
+| 前端直连后端时 CORS 报错 | `CorsConfig` 默认只放行 localhost / *.vercel.app | 用代理方案,或把域名加进 `CORS_ALLOWED_ORIGINS` |
 | Build 失败:`vue-tsc: not found` / `ENOENT package.json` | Root Directory 没设成 `frontend` | 重新设置 Root Directory |
 | Build 失败:TypeScript 报错 | 本地没过 | 本地 `pnpm build` 复现修掉再 push |
 | Railway 部署成功但访问 502 | 平台端口与应用端口不一致 | `SERVER_PORT=8080`;或改成 `${{PORT}}`;确认 Generated Domain 已开 |

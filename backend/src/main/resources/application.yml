@@ -57,6 +57,11 @@ app:
   # weekly leaderboard fall back to in-process implementations (single instance).
   redis:
     enabled: ${REDIS_ENABLED:true}
+  # Origin patterns allowed by the backend. The Vercel /api rewrite forwards the
+  # browser Origin header, so Vercel deployments must be listed. Comma separated;
+  # override with CORS_ALLOWED_ORIGINS (e.g. add your custom domain).
+  cors:
+    allowed-origin-patterns: "${CORS_ALLOWED_ORIGINS:http://localhost:*,http://127.0.0.1:*,https://*.vercel.app}"
 
 # === API Docs ===
 springdoc:
