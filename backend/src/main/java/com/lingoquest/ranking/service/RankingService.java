@@ -6,13 +6,9 @@ import com.lingoquest.user.entity.User;
 import com.lingoquest.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,39 +18,31 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class RankingService {
 
-    private final RedisTemplate<String, Object> redis;
+    private final WeeklyLeaderboard weeklyLeaderboard;
     private final UserMapper userMapper;
-
-    private static String weeklyKey() {
-        var today = LocalDate.now();
-        int year = today.get(ChronoField.YEAR);
-        int week = today.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
-        return "lingo:rank:weekly:" + year + "-W" + String.format("%02d", week);
-    }
 
     @Async
     @EventListener
     public void onAnswer(AnswerSubmittedEvent e) {
         if (e.correct()) {
-            redis.opsForZSet().incrementScore(weeklyKey(), String.valueOf(e.userId()), e.gainedExp());
+            weeklyLeaderboard.record(e.userId(), e.gainedExp());
         }
     }
 
     public List<Map<String, Object>> weeklyTop(int limit) {
-        var entries = redis.opsForZSet().reverseRangeWithScores(weeklyKey(), 0, limit - 1);
-        if (entries == null || entries.isEmpty()) return List.of();
+        var entries = weeklyLeaderboard.top(limit);
+        if (entries.isEmpty()) return List.of();
         var result = new ArrayList<Map<String, Object>>(entries.size());
         int rank = 1;
-        for (var t : entries) {
-            var id = Long.valueOf(t.getValue().toString());
-            var u = userMapper.selectById(id);
+        for (var entry : entries) {
+            var u = userMapper.selectById(entry.userId());
             if (u == null) continue;
             var row = new LinkedHashMap<String, Object>();
             row.put("rank", rank++);
             row.put("userId", u.getId());
             row.put("username", u.getUsername());
             row.put("level", u.getLevel());
-            row.put("score", t.getScore() == null ? 0 : t.getScore().intValue());
+            row.put("score", entry.score());
             result.add(row);
         }
         return result;

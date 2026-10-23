@@ -1,5 +1,5 @@
 server:
-  port: ${SERVER_PORT:8080}
+  port: ${PORT:${SERVER_PORT:8080}}
   servlet:
     context-path: /api
 
@@ -53,6 +53,10 @@ app:
   ai:
     cache-ttl-hours: 24
     rate-limit-per-minute: 10
+  # Redis is optional: with REDIS_ENABLED=false the AI cache / rate limiter /
+  # weekly leaderboard fall back to in-process implementations (single instance).
+  redis:
+    enabled: ${REDIS_ENABLED:true}
 
 # === API Docs ===
 springdoc:

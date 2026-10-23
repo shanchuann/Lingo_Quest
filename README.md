@@ -21,7 +21,7 @@
 |---|---|
 | Frontend | Vue 3.5, Vite 6, TypeScript, Tailwind, shadcn-vue, Lucide, Pinia, Axios, ECharts |
 | Backend  | Spring Boot 3.3, Spring Security 6, JJWT, MyBatis-Plus 3.5, SpringDoc OpenAPI |
-| Data     | MySQL 8.0, Redis 7 |
+| Data     | MySQL 8.0, Redis 7(AI 缓存 / 限流 / 周榜;**可选**,`REDIS_ENABLED=false` 时降级为进程内实现) |
 | AI       | DeepSeek `deepseek-chat` via OpenAI-compatible HTTP |
 
 ## Quick start
@@ -46,6 +46,17 @@ pnpm install
 pnpm dev
 # Open http://localhost:5173
 ```
+
+## Deploy
+
+Vercel 只能托管 Vue 前端(静态 + Serverless,没有常驻 JVM 和数据库),所以生产部署拆成两段:
+
+- **前端** → [Vercel](https://vercel.com):Root Directory 设为 `frontend`,构建 `pnpm build`,输出 `dist`。
+- **后端 + MySQL** → [Railway](https://railway.com):用仓库自带的 `backend/Dockerfile` 构建,业务数据用 `database/init/*.sql` 导入。Redis 可选,只加 MySQL 时设 `REDIS_ENABLED=false`(AI 缓存 / 限流 / 周榜自动降级为进程内实现,详见 DEPLOY.md 2.6)。
+
+浏览器请求的 `/api/**` 由 `frontend/vercel.json` 反向代理到后端,前端代码和后端 CORS 都不需要改。
+
+完整步骤(建项目、环境变量、数据库导入、验收清单、排错表)见 **[DEPLOY.md](DEPLOY.md)**。
 
 ## Project layout
 

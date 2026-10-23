@@ -1,41 +1,18 @@
 package com.lingoquest.infra.ai;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
-
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.time.Duration;
-import java.util.HexFormat;
 import java.util.function.Supplier;
 
-@Component
-@RequiredArgsConstructor
-public class AiCache {
-    private final RedisTemplate<String, Object> redis;
+/**
+ * AI response cache abstraction.
+ *
+ * <p>When Redis is available the Redis-backed implementation is used;
+ * when the deployment has no Redis (e.g. MySQL-only hosting) the
+ * in-process implementation keeps the same behaviour for a single instance.</p>
+ */
+public interface AiCache {
 
-    @Value("${app.ai.cache-ttl-hours}")
-    private int ttlHours;
-
-    public <T> T cached(String namespace, String input, Class<T> clazz, Supplier<T> loader) {
-        var key = "lingo:ai:cache:" + namespace + ":" + sha(input);
-        Object hit = redis.opsForValue().get(key);
-        if (clazz.isInstance(hit)) return clazz.cast(hit);
-        T fresh = loader.get();
-        if (fresh != null) {
-            redis.opsForValue().set(key, fresh, Duration.ofHours(ttlHours));
-        }
-        return fresh;
-    }
-
-    private static String sha(String s) {
-        try {
-            var md = MessageDigest.getInstance("SHA-256");
-            return HexFormat.of().formatHex(md.digest(s.getBytes(StandardCharsets.UTF_8)));
-        } catch (Exception e) {
-            return Integer.toHexString(s.hashCode());
-        }
-    }
+    /**
+     * Return the cached value for {@code namespace + input}, or compute it.
+     */
+    <T> T cached(String namespace, String input, Class<T> clazz, Supplier<T> loader);
 }
