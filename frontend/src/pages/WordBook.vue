@@ -204,12 +204,12 @@ async function setCurrent() {
                     <span v-if="w.exampleZh" class="mt-1 block text-ink-soft">{{ w.exampleZh }}</span>
                   </p>
                 </div>
-                <div class="flex flex-row items-start gap-2 lg:flex-col lg:items-end">
-                  <div class="inline-flex items-center gap-1.5 rounded-sm bg-paper-3 px-2 py-1 font-mono text-[11px]" :class="stateMap[w.state].color">
+                <div class="flex flex-row items-center gap-2 lg:flex-col lg:items-end">
+                  <div class="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-sm bg-paper-3 px-2.5 py-0 font-mono text-[11px] sm:h-auto sm:px-2 sm:py-1" :class="stateMap[w.state].color">
                     <component :is="stateMap[w.state].icon" class="h-3 w-3" />
                     {{ stateMap[w.state].label }}
                   </div>
-                  <div class="inline-flex rounded-md border border-rule bg-paper p-0.5">
+                  <div class="inline-flex h-10 items-center rounded-md border border-rule bg-paper p-0.5 sm:h-auto">
                     <button
                       class="inline-flex h-7 min-h-[40px] items-center gap-1 rounded-sm px-2 text-[11.5px] transition-colors focus-ring sm:min-h-0"
                       :class="w.state === 'LEARNING' ? 'bg-warning/20 text-ink font-medium' : 'text-ink-soft hover:text-ink'"

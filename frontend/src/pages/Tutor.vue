@@ -11,6 +11,7 @@ import {
   Quote,
   Library,
   ChevronDown,
+  X,
 } from 'lucide-vue-next'
 import AppLayout from '@/layouts/AppLayout.vue'
 import Button from '@/components/ui/Button.vue'
@@ -91,7 +92,7 @@ async function coachVocab() {
 
 <template>
   <AppLayout>
-    <section class="container py-16">
+    <section class="container py-8 md:py-16">
       <div class="mx-auto max-w-3xl">
         <header>
           <div class="label-slash">
@@ -107,7 +108,7 @@ async function coachVocab() {
           </p>
         </header>
 
-        <div class="mt-10 flex flex-wrap items-center gap-3">
+        <div class="mt-8 flex flex-wrap items-center gap-2.5 md:mt-10 md:gap-3">
           <div class="inline-flex rounded-md border border-rule bg-paper p-1">
             <button
               class="inline-flex h-10 items-center gap-2 rounded-sm px-4 text-[14px] transition-colors duration-200 focus-ring"
@@ -127,7 +128,7 @@ async function coachVocab() {
             </button>
           </div>
           <!-- 选择词书 — same h-10 footprint as the two tabs on its left -->
-          <div class="relative">
+          <div class="relative min-w-0">
             <button
               class="inline-flex h-10 items-center gap-2 rounded-sm bg-pixel-green px-4 text-[14px] font-medium text-ink transition-colors duration-200 hover:bg-pixel-mint focus-ring"
               :disabled="pickingFromBook"
@@ -135,13 +136,20 @@ async function coachVocab() {
             >
               <Loader2 v-if="pickingFromBook" class="h-4 w-4 animate-spin" />
               <Library v-else class="h-4 w-4" />
-              <span class="max-w-[14ch] truncate">
+              <span class="max-w-[10ch] truncate sm:max-w-[14ch]">
                 {{ currentBook()?.name || '选择词书' }}
               </span>
               <ChevronDown class="h-3.5 w-3.5 opacity-70 transition-transform" :class="showBookPicker ? 'rotate-180' : ''" />
             </button>
 
-            <!-- Dropdown: full word-book catalog with mastered/total -->
+            <!-- Mobile backdrop for the bottom sheet -->
+            <div
+              v-if="showBookPicker"
+              class="fixed inset-0 z-30 bg-ink/30 sm:hidden"
+              @click="showBookPicker = false"
+            />
+
+            <!-- Picker: bottom sheet on phones, dropdown on >= sm -->
             <Transition
               enter-active-class="transition duration-200 ease-out-expo"
               enter-from-class="opacity-0 -translate-y-1"
@@ -150,13 +158,22 @@ async function coachVocab() {
             >
               <div
                 v-if="showBookPicker"
-                class="absolute right-0 top-full z-30 mt-2 w-[320px] overflow-hidden rounded-md border-2 border-ink bg-paper shadow-page"
+                class="fixed inset-x-0 bottom-0 z-40 max-h-[75dvh] overflow-hidden rounded-t-md border-2 border-ink bg-paper pb-[env(safe-area-inset-bottom)] shadow-page sm:absolute sm:inset-x-auto sm:bottom-auto sm:right-0 sm:top-full sm:z-30 sm:mt-2 sm:max-h-none sm:w-[320px] sm:rounded-md sm:pb-0"
               >
                 <div class="flex items-center justify-between border-b border-rule-soft px-4 py-2.5">
                   <span class="label-slash">我的词书</span>
-                  <span class="font-mono text-[11px] text-ink-faint">{{ books.length }} 本</span>
+                  <div class="flex items-center gap-2">
+                    <span class="font-mono text-[11px] text-ink-faint">{{ books.length }} 本</span>
+                    <button
+                      class="-mr-1 inline-flex h-8 w-8 items-center justify-center rounded-sm text-ink-soft transition-colors hover:bg-paper-3 hover:text-ink focus-ring sm:hidden"
+                      aria-label="关闭词书选择"
+                      @click="showBookPicker = false"
+                    >
+                      <X class="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
-                <ul class="max-h-[380px] overflow-y-auto py-1">
+                <ul class="max-h-[calc(75dvh-3.25rem)] overflow-y-auto py-1 sm:max-h-[380px]">
                   <li
                     v-for="b in books"
                     :key="b.id"
