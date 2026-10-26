@@ -230,17 +230,17 @@ function signOut() {
 
 <template>
   <AppLayout>
-    <section class="container py-12">
+    <section class="container py-8 md:py-12">
       <div class="mx-auto max-w-4xl">
         <!-- Identity card -->
         <header class="flex flex-wrap items-end justify-between gap-6">
-          <div class="flex items-center gap-5">
-            <div class="flex h-16 w-16 items-center justify-center rounded-md border-2 border-ink bg-pixel-green font-display text-[28px] font-black text-ink">
+          <div class="flex min-w-0 items-center gap-4 sm:gap-5">
+            <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-md border-2 border-ink bg-pixel-green font-display text-[28px] font-black text-ink">
               {{ initial }}
             </div>
-            <div>
+            <div class="min-w-0">
               <div class="label-slash">个人中心</div>
-              <h1 class="mt-2 font-display text-display-lg font-black leading-[0.98] tracking-tight">
+              <h1 class="mt-2 break-words font-display text-display-lg font-black leading-[0.98] tracking-tight [overflow-wrap:anywhere]">
                 {{ auth.user?.username }}
               </h1>
               <p class="mt-1 font-mono text-[12px] text-ink-soft">
@@ -248,18 +248,18 @@ function signOut() {
               </p>
             </div>
           </div>
-          <Button variant="bone" size="sm" @click="signOut">
+          <Button variant="bone" size="sm" class="min-h-[40px] sm:min-h-0" @click="signOut">
             <LogOut class="h-3.5 w-3.5" />
             退出登录
           </Button>
         </header>
 
         <!-- Tabs -->
-        <nav class="mt-10 inline-flex rounded-md border border-rule bg-paper p-1">
+        <nav class="mt-8 flex w-full flex-wrap rounded-md border border-rule bg-paper p-1 sm:mt-10 sm:inline-flex sm:w-auto sm:flex-nowrap">
           <button
             v-for="t in tabs"
             :key="t.k"
-            class="inline-flex h-10 items-center gap-2 rounded-sm px-4 text-[13.5px] transition-colors duration-200 focus-ring"
+            class="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-sm px-2 text-[13.5px] transition-colors duration-200 focus-ring sm:flex-none sm:px-4"
             :class="tab === t.k ? 'bg-ink text-paper font-medium' : 'text-ink-soft hover:text-ink'"
             @click="tab = t.k"
           >
@@ -269,11 +269,11 @@ function signOut() {
         </nav>
 
         <!-- ───────── INFO ───────── -->
-        <div v-if="tab === 'info'" class="mt-6 rounded-md border border-rule bg-paper p-6">
+        <div v-if="tab === 'info'" class="mt-6 rounded-md border border-rule bg-paper p-5 md:p-6">
           <div class="grid gap-6 md:grid-cols-[180px_1fr]">
             <div>
               <div class="label-slash">头像预览</div>
-              <div class="mt-3 flex aspect-square w-full items-center justify-center overflow-hidden rounded-md border border-rule bg-paper-2">
+              <div class="mt-3 flex aspect-square w-full max-w-[160px] items-center justify-center overflow-hidden rounded-md border border-rule bg-paper-2 md:max-w-none">
                 <img
                   v-if="profile.avatar && !avatarBroken"
                   :src="profile.avatar"
@@ -326,7 +326,7 @@ function signOut() {
         </div>
 
         <!-- ───────── PASSWORD ───────── -->
-        <div v-else-if="tab === 'password'" class="mt-6 rounded-md border border-rule bg-paper p-6">
+        <div v-else-if="tab === 'password'" class="mt-6 rounded-md border border-rule bg-paper p-5 md:p-6">
           <form class="max-w-md space-y-4" @submit.prevent="savePassword">
             <div class="space-y-2">
               <label class="label-slash">原密码</label>
@@ -367,7 +367,7 @@ function signOut() {
             读取战绩中…
           </div>
           <template v-else-if="stats">
-            <div class="grid gap-[2px] overflow-hidden rounded-md border border-rule bg-rule md:grid-cols-4">
+            <div class="grid grid-cols-2 gap-[2px] overflow-hidden rounded-md border border-rule bg-rule md:grid-cols-4">
               <div class="bg-paper p-5">
                 <div class="text-[12px] text-ink-soft">参与对局</div>
                 <div class="mt-2 font-display text-[32px] font-black leading-none tracking-tight">{{ stats.totalGames }}</div>
@@ -386,10 +386,10 @@ function signOut() {
               </div>
             </div>
 
-            <div class="rounded-md border border-rule bg-paper p-6">
+            <div class="rounded-md border border-rule bg-paper p-5 md:p-6">
               <div class="label-slash">综合正确率</div>
-              <div class="mt-4 flex items-baseline gap-3">
-                <div class="font-display text-[56px] font-black leading-none tracking-tight">{{ stats.accuracy.toFixed(1) }}%</div>
+              <div class="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <div class="font-display text-[40px] font-black leading-none tracking-tight md:text-[56px]">{{ stats.accuracy.toFixed(1) }}%</div>
                 <span class="font-mono text-[12px] text-ink-soft">基于全部历史答题</span>
               </div>
               <div class="mt-5 h-2 w-full overflow-hidden border border-rule bg-paper-2">
@@ -398,14 +398,14 @@ function signOut() {
             </div>
 
             <!-- Current word book block -->
-            <div class="rounded-md border border-rule bg-paper p-6">
-              <div class="flex items-center justify-between">
+            <div class="rounded-md border border-rule bg-paper p-5 md:p-6">
+              <div class="flex flex-wrap items-center justify-between gap-3">
                 <div class="label-slash">
                   <Library class="mr-1.5 h-3.5 w-3.5" />
                   当前词书
                 </div>
                 <select
-                  class="h-9 rounded-sm border border-rule bg-paper px-3 text-[13px] text-ink focus-ring"
+                  class="h-11 w-full max-w-full rounded-sm border border-rule bg-paper px-3 text-[13px] text-ink focus-ring sm:h-9 sm:w-auto"
                   :value="auth.user?.currentBookId ?? ''"
                   :disabled="selectingBook"
                   @change="chooseBook"
@@ -433,13 +433,13 @@ function signOut() {
             </div>
 
             <!-- Accuracy trend chart -->
-            <div class="rounded-md border border-rule bg-paper p-6">
+            <div class="rounded-md border border-rule bg-paper p-5 md:p-6">
               <div class="label-slash">最近 14 天正确率</div>
               <div v-if="trend.length === 0" class="mt-4 text-[13.5px] text-ink-soft">
                 还没有足够数据 —— 多答几道题就有趋势图了。
               </div>
               <div v-else class="mt-4 w-full overflow-x-auto">
-                <svg :viewBox="`0 0 ${trendChart.W} ${trendChart.H}`" class="h-32 w-full">
+                <svg :viewBox="`0 0 ${trendChart.W} ${trendChart.H}`" class="h-32 w-full min-w-[440px] sm:min-w-0">
                   <!-- baseline 100% & 50% -->
                   <line :x1="trendChart.P" :y1="trendChart.P" :x2="trendChart.W - trendChart.P" :y2="trendChart.P"
                         stroke="oklch(0.78 0.012 90)" stroke-dasharray="2 4" />
@@ -460,13 +460,13 @@ function signOut() {
             </div>
 
             <!-- Recent games list -->
-            <div class="rounded-md border border-rule bg-paper p-6">
+            <div class="rounded-md border border-rule bg-paper p-5 md:p-6">
               <div class="label-slash">最近对局</div>
               <div v-if="recentGames.length === 0" class="mt-4 text-[13.5px] text-ink-soft">
                 还没开始过对局 —— 去棋盘掷第一颗骰子吧。
               </div>
               <ul v-else class="mt-4 divide-y divide-rule-soft">
-                <li v-for="g in recentGames" :key="g.id" class="grid grid-cols-[60px_1fr_auto_auto] items-center gap-3 py-2.5">
+                <li v-for="g in recentGames" :key="g.id" class="flex flex-wrap items-center gap-x-3 gap-y-1 py-2.5 sm:grid sm:grid-cols-[60px_1fr_auto_auto] sm:gap-3">
                   <span class="font-mono text-[12px] text-ink-soft">#{{ g.id }}</span>
                   <span class="font-mono text-[12.5px] text-ink-soft">{{ String(g.startTime).slice(0, 16).replace('T', ' ') }}</span>
                   <span class="font-mono text-[12.5px] text-ink">回合 {{ g.roundNum }} · 分 {{ g.totalScore }}</span>
@@ -475,7 +475,7 @@ function signOut() {
               </ul>
             </div>
 
-            <div class="rounded-md border border-rule bg-paper p-6">
+            <div class="rounded-md border border-rule bg-paper p-5 md:p-6">
               <div class="label-slash">资源储备</div>
               <dl class="mt-4 grid grid-cols-3 gap-4 text-[14px]">
                 <div>
@@ -496,7 +496,7 @@ function signOut() {
         </div>
 
         <!-- ───────── DANGER ───────── -->
-        <div v-else-if="tab === 'danger'" class="mt-6 rounded-md border-2 border-danger bg-paper p-6">
+        <div v-else-if="tab === 'danger'" class="mt-6 rounded-md border-2 border-danger bg-paper p-5 md:p-6">
           <div class="flex items-start gap-3">
             <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-pixel-red text-paper">
               <ShieldAlert class="h-5 w-5" />

@@ -227,7 +227,7 @@ onUnmounted(() => {
 
 <template>
   <AppLayout>
-    <section class="container py-12">
+    <section class="container py-8 md:py-12">
       <!-- Page header -->
       <header class="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
@@ -382,7 +382,7 @@ onUnmounted(() => {
     >
       <div
         v-if="game.lastAnswer"
-        class="fixed bottom-6 right-6 z-40 w-[360px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-md border-2 bg-paper shadow-page"
+        class="fixed bottom-4 left-4 right-4 z-40 w-auto overflow-hidden rounded-md border-2 bg-paper shadow-page sm:bottom-6 sm:left-auto sm:right-6 sm:w-[360px] sm:max-w-[calc(100vw-2rem)]"
         :class="game.lastAnswer.correct ? 'border-pixel-green' : 'border-pixel-red'"
       >
         <div class="flex items-start gap-3 p-4">
@@ -421,7 +421,7 @@ onUnmounted(() => {
     >
       <div
         v-if="landToast && landMeta"
-        class="fixed bottom-6 left-6 z-40 w-[360px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-md border-2 bg-paper shadow-page"
+        class="fixed bottom-4 left-4 right-4 z-40 w-auto overflow-hidden rounded-md border-2 bg-paper shadow-page sm:bottom-6 sm:left-6 sm:right-auto sm:w-[360px] sm:max-w-[calc(100vw-2rem)]"
         :class="landMeta.border"
       >
         <div class="flex items-start gap-3 p-4">

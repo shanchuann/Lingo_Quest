@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useMediaQuery } from '@vueuse/core'
 import { cn } from '@/lib/utils'
 import {
   BookOpen,
@@ -31,7 +32,10 @@ const boardThemeClass = computed(() => {
   }
 })
 
-const COLS = 6
+// 4 columns on phones, 6 from md up. The snake path recomputes from this.
+const isCompact = useMediaQuery('(max-width: 767px)')
+const COLS = computed(() => (isCompact.value ? 4 : 6))
+const rowHeight = computed(() => (isCompact.value ? 78 : 108))
 
 const icons: Record<TileView['tileType'], any> = {
   START: Flag,
@@ -92,12 +96,13 @@ interface CellInfo {
 const cells = computed<CellInfo[]>(() => {
   const list = ordered.value
   if (list.length === 0) return []
-  const rows = Math.ceil(list.length / COLS)
+  const cols = COLS.value
+  const rows = Math.ceil(list.length / cols)
   return list.map((tile, i) => {
-    const rowFromBottom = Math.floor(i / COLS)
+    const rowFromBottom = Math.floor(i / cols)
     const ltr = rowFromBottom % 2 === 0
-    const inRow = i % COLS
-    const col = ltr ? inRow : COLS - 1 - inRow
+    const inRow = i % cols
+    const col = ltr ? inRow : cols - 1 - inRow
     const row = rows - 1 - rowFromBottom
     return { tile, row, col, ltr }
   })
@@ -111,7 +116,7 @@ const rowsCount = computed(() => {
 const pathD = computed(() => {
   if (cells.value.length === 0) return ''
   const sorted = [...cells.value].sort((a, b) => a.tile.position - b.tile.position)
-  const cellW = 100 / COLS
+  const cellW = 100 / COLS.value
   const cellH = 100 / rowsCount.value
   return sorted
     .map((c, i) => {
@@ -159,7 +164,7 @@ const pathD = computed(() => {
         class="relative z-10 grid gap-[3px]"
         :style="{
           gridTemplateColumns: `repeat(${COLS}, minmax(0, 1fr))`,
-          gridTemplateRows: `repeat(${rowsCount}, minmax(108px, 1fr))`,
+          gridTemplateRows: `repeat(${rowsCount}, minmax(${rowHeight}px, 1fr))`,
         }"
       >
         <article
@@ -167,7 +172,7 @@ const pathD = computed(() => {
           :key="c.tile.position"
           :style="{ gridColumnStart: c.col + 1, gridRowStart: c.row + 1 }"
           :class="cn(
-            'group relative flex h-full flex-col justify-between overflow-hidden p-2.5 transition-transform duration-300 ease-out-expo',
+            'group relative flex h-full flex-col justify-between overflow-hidden p-1.5 transition-transform duration-300 ease-out-expo md:p-2.5',
             tileBg[c.tile.tileType],
             tileFg[c.tile.tileType],
             c.tile.position === position
@@ -176,7 +181,7 @@ const pathD = computed(() => {
           )"
         >
           <!-- top row: index + reward -->
-          <div class="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.16em] opacity-80">
+          <div class="flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.12em] opacity-80 md:text-[10px] md:tracking-[0.16em]">
             <span>{{ c.tile.position.toString().padStart(2, '0') }}</span>
             <span v-if="c.tile.rewardExp">
               {{ c.tile.rewardExp > 0 ? '+' : '' }}{{ c.tile.rewardExp }}
@@ -184,14 +189,14 @@ const pathD = computed(() => {
           </div>
 
           <!-- middle: tile name -->
-          <div class="font-display text-[15px] font-black uppercase leading-[1.0] tracking-tight line-clamp-2">
+          <div class="font-display text-[11.5px] font-black uppercase leading-[1.05] tracking-tight line-clamp-2 md:text-[15px] md:leading-[1.0]">
             {{ c.tile.tileName }}
           </div>
 
           <!-- bottom: type label + direction hint -->
           <div class="flex items-center justify-between">
-            <span class="inline-flex items-center gap-1.5 text-[11px]">
-              <component :is="icons[c.tile.tileType]" class="h-3.5 w-3.5" />
+            <span class="inline-flex items-center gap-1 text-[9.5px] md:gap-1.5 md:text-[11px]">
+              <component :is="icons[c.tile.tileType]" class="h-3 w-3 md:h-3.5 md:w-3.5" />
               {{ tileLabel[c.tile.tileType] }}
             </span>
             <MoveRight

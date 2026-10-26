@@ -33,7 +33,7 @@ const dashOffset = computed(() => {
 
 <template>
   <AppLayout>
-    <section class="container py-12">
+    <section class="container py-8 md:py-12">
       <div class="mx-auto max-w-4xl">
         <header class="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -45,7 +45,7 @@ const dashOffset = computed(() => {
               这一周,一句话总结。
             </h1>
           </div>
-          <Button variant="bone" size="sm" :disabled="loading" @click="load">
+          <Button variant="bone" size="sm" class="min-h-[40px] sm:min-h-0" :disabled="loading" @click="load">
             <Loader2 v-if="loading" class="h-3.5 w-3.5 animate-spin" />
             <Sparkles v-else class="h-3.5 w-3.5" />
             {{ loading ? '刷新中' : '重新生成' }}
@@ -64,8 +64,8 @@ const dashOffset = computed(() => {
 
         <template v-if="report">
           <!-- Gauge + counters -->
-          <div class="mt-10 grid gap-[2px] overflow-hidden rounded-md border border-rule bg-rule md:grid-cols-[280px_1fr]">
-            <div class="flex items-center justify-center bg-paper p-6">
+          <div class="mt-8 grid gap-[2px] overflow-hidden rounded-md border border-rule bg-rule md:mt-10 md:grid-cols-[280px_1fr]">
+            <div class="flex items-center justify-center bg-paper p-5 md:p-6">
               <div class="relative">
                 <svg width="160" height="160" viewBox="0 0 160 160">
                   <circle cx="80" cy="80" r="56" stroke="oklch(0.78 0.012 90)" stroke-width="10" fill="none" />
@@ -111,14 +111,14 @@ const dashOffset = computed(() => {
           </div>
 
           <!-- By type -->
-          <div v-if="report.by_type.length" class="mt-6 rounded-md border border-rule bg-paper p-6">
+          <div v-if="report.by_type.length" class="mt-6 rounded-md border border-rule bg-paper p-5 md:p-6">
             <div class="label-slash">
               <Target class="mr-1.5 h-3.5 w-3.5" />
               按题型拆解
             </div>
             <div class="mt-5 space-y-4">
               <div v-for="b in report.by_type" :key="b.type">
-                <div class="flex items-baseline justify-between text-[13.5px]">
+                <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 text-[13.5px]">
                   <span class="font-medium">{{ b.type }}</span>
                   <span class="font-mono text-ink-soft">{{ b.correct }} / {{ b.total }} · {{ b.accuracy.toFixed(0) }}%</span>
                 </div>
@@ -133,7 +133,7 @@ const dashOffset = computed(() => {
           </div>
 
           <!-- AI summary -->
-          <div class="relative mt-6 overflow-hidden rounded-md border border-rule bg-paper p-6">
+          <div class="relative mt-6 overflow-hidden rounded-md border border-rule bg-paper p-5 md:p-6">
             <div class="absolute right-0 top-0 grid grid-cols-3 gap-[2px]" aria-hidden="true">
               <span class="h-3 w-3 bg-pixel-green" />
               <span class="h-3 w-3 bg-pixel-amber" />
@@ -172,7 +172,7 @@ const dashOffset = computed(() => {
                 </ul>
               </div>
 
-              <div class="mt-6 inline-flex items-center gap-2 rounded-sm border border-ink bg-pixel-amber/40 px-3 py-2 text-[13px] text-ink">
+              <div class="mt-6 inline-flex flex-wrap items-center gap-2 rounded-sm border border-ink bg-pixel-amber/40 px-3 py-2 text-[13px] text-ink">
                 <TrendingUp class="h-3.5 w-3.5" />
                 <span class="font-medium">下周聚焦</span>
                 <span class="text-ink-faint">·</span>

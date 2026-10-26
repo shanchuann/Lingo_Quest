@@ -32,12 +32,12 @@ const progress = computed(() => {
 
 <template>
   <AppLayout>
-    <section class="container py-14">
+    <section class="container py-10 md:py-14">
       <div class="mx-auto max-w-5xl">
         <div class="flex flex-wrap items-end justify-between gap-4">
           <div>
             <div class="label-slash">已登录</div>
-            <h1 class="mt-4 font-display text-display-lg font-black leading-[0.98] tracking-tight">
+            <h1 class="mt-4 break-words font-display text-display-lg font-black leading-[0.98] tracking-tight">
               欢迎回来,<span class="text-ink-faint">{{ auth.user?.username || '学者' }}。</span>
             </h1>
             <p class="mt-4 max-w-[40ch] text-[15px] leading-[1.7] text-ink-soft">
@@ -55,13 +55,13 @@ const progress = computed(() => {
         </div>
 
         <!-- Stats strip -->
-        <div class="mt-12 grid gap-[2px] overflow-hidden rounded-md border border-rule bg-rule md:grid-cols-3">
-          <article class="bg-paper p-6">
+        <div class="mt-8 grid gap-[2px] overflow-hidden rounded-md border border-rule bg-rule md:mt-12 md:grid-cols-3">
+          <article class="bg-paper p-5 md:p-6">
             <div class="flex items-center justify-between text-[12px] text-ink-soft">
               <span class="inline-flex items-center gap-1.5 text-ink"><TrendingUp class="h-3.5 w-3.5" /> 等级</span>
               <span class="inline-block h-3 w-3 bg-pixel-green" />
             </div>
-            <div class="mt-5 font-display text-[56px] font-black leading-none tracking-tight">
+            <div class="mt-5 font-display text-[40px] md:text-[56px] font-black leading-none tracking-tight">
               Lv {{ auth.user?.level ?? 1 }}
             </div>
             <div class="mt-5 h-2 w-full overflow-hidden border border-rule bg-paper-2">
@@ -73,12 +73,12 @@ const progress = computed(() => {
             </div>
           </article>
 
-          <article class="bg-paper p-6">
+          <article class="bg-paper p-5 md:p-6">
             <div class="flex items-center justify-between text-[12px] text-ink-soft">
               <span class="inline-flex items-center gap-1.5 text-ink"><Coins class="h-3.5 w-3.5" /> 金币</span>
               <span class="inline-block h-3 w-3 bg-pixel-amber" />
             </div>
-            <div class="mt-5 font-display text-[56px] font-black leading-none tracking-tight">
+            <div class="mt-5 font-display text-[40px] md:text-[56px] font-black leading-none tracking-tight">
               {{ auth.user?.coins ?? 0 }}
             </div>
             <p class="mt-5 text-[13px] text-ink-soft">
@@ -86,12 +86,12 @@ const progress = computed(() => {
             </p>
           </article>
 
-          <article class="bg-paper p-6">
+          <article class="bg-paper p-5 md:p-6">
             <div class="flex items-center justify-between text-[12px] text-ink-soft">
               <span class="inline-flex items-center gap-1.5 text-ink"><Trophy class="h-3.5 w-3.5" /> 徽章</span>
               <span class="inline-block h-3 w-3 bg-pixel-pink" />
             </div>
-            <div class="mt-5 font-display text-[56px] font-black leading-none tracking-tight">{{ unlockedCount }}</div>
+            <div class="mt-5 font-display text-[40px] md:text-[56px] font-black leading-none tracking-tight">{{ unlockedCount }}</div>
             <RouterLink
               to="/achievements"
               class="mt-5 inline-flex items-center gap-1 text-[13px] text-ink-soft underline decoration-rule-soft underline-offset-[6px] transition-colors hover:text-ink hover:decoration-ink"
@@ -102,10 +102,10 @@ const progress = computed(() => {
         </div>
 
         <!-- Quick links -->
-        <div class="mt-12 grid gap-4 md:grid-cols-2">
+        <div class="mt-8 grid gap-4 md:mt-12 md:grid-cols-2">
           <RouterLink
             to="/game"
-            class="group relative overflow-hidden rounded-md border border-rule bg-paper p-6 transition-colors hover:bg-paper-2"
+            class="group relative overflow-hidden rounded-md border border-rule bg-paper p-5 transition-colors md:p-6 hover:bg-paper-2"
           >
             <div class="flex items-start gap-4">
               <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-pixel-green text-ink">
@@ -123,7 +123,7 @@ const progress = computed(() => {
 
           <RouterLink
             to="/tutor"
-            class="group relative overflow-hidden rounded-md border border-rule bg-paper p-6 transition-colors hover:bg-paper-2"
+            class="group relative overflow-hidden rounded-md border border-rule bg-paper p-5 transition-colors md:p-6 hover:bg-paper-2"
           >
             <div class="flex items-start gap-4">
               <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-pixel-blue text-paper">

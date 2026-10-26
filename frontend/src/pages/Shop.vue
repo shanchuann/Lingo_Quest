@@ -143,7 +143,7 @@ const swatchFor: Record<ShopCategory, string> = {
 
 <template>
   <AppLayout>
-    <section class="container py-12">
+    <section class="container py-8 md:py-12">
       <div class="mx-auto max-w-5xl">
         <header class="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -169,7 +169,7 @@ const swatchFor: Record<ShopCategory, string> = {
         </header>
 
         <!-- Tabs -->
-        <nav class="mt-10 flex flex-wrap gap-1 rounded-md border border-rule bg-paper p-1">
+        <nav class="mt-8 flex flex-wrap gap-1 rounded-md border border-rule bg-paper p-1 md:mt-10">
           <button
             v-for="t in categories"
             :key="t.k"
@@ -248,6 +248,7 @@ const swatchFor: Record<ShopCategory, string> = {
                   v-if="e.consumable === 1"
                   size="sm"
                   :disabled="usingId === e.itemId"
+                  class="min-h-[40px] sm:min-h-0"
                   @click="useItem(e)"
                 >
                   <Loader2 v-if="usingId === e.itemId" class="h-3.5 w-3.5 animate-spin" />
@@ -259,6 +260,7 @@ const swatchFor: Record<ShopCategory, string> = {
                   size="sm"
                   :variant="e.equipped === 1 ? 'bone' : 'ink'"
                   :disabled="equippingId === e.itemId"
+                  class="min-h-[40px] sm:min-h-0"
                   @click="toggleEquip(e)"
                 >
                   <Loader2 v-if="equippingId === e.itemId" class="h-3.5 w-3.5 animate-spin" />
@@ -308,6 +310,7 @@ const swatchFor: Record<ShopCategory, string> = {
                   size="sm"
                   :variant="ownedMap.get(i.id)?.equipped === 1 ? 'bone' : 'ink'"
                   :disabled="purchasingId === i.id"
+                  class="min-h-[40px] sm:min-h-0"
                   @click="toggleEquipFromCatalog(i)"
                 >
                   <Loader2 v-if="purchasingId === i.id" class="h-3.5 w-3.5 animate-spin" />
@@ -321,6 +324,7 @@ const swatchFor: Record<ShopCategory, string> = {
                 size="sm"
                 :variant="(auth.user?.coins ?? 0) < i.price ? 'bone' : 'pop'"
                 :disabled="purchasingId === i.id || (auth.user?.coins ?? 0) < i.price"
+                class="min-h-[40px] sm:min-h-0"
                 @click="buy(i)"
               >
                 <Loader2 v-if="purchasingId === i.id" class="h-3.5 w-3.5 animate-spin" />

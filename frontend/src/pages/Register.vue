@@ -30,9 +30,9 @@ async function submit() {
 
 <template>
   <AppLayout>
-    <section class="container py-20">
+    <section class="container py-10 sm:py-20">
       <div class="mx-auto grid w-full max-w-4xl items-stretch gap-[2px] overflow-hidden rounded-md border border-rule bg-rule lg:grid-cols-2">
-        <div class="hidden flex-col justify-between bg-paper p-8 lg:flex">
+        <div class="hidden flex-col justify-between bg-paper p-5 sm:p-8 lg:flex">
           <div>
             <div class="label-slash">创建账号</div>
             <h2 class="mt-4 font-display text-display-lg font-black leading-[0.98] tracking-tight">
@@ -64,13 +64,13 @@ async function submit() {
           </ol>
         </div>
 
-        <div class="bg-paper p-8">
+        <div class="bg-paper p-5 sm:p-8">
           <h1 class="font-display text-[32px] font-black leading-tight tracking-tight">创建账号</h1>
           <p class="mt-2 text-[14px] text-ink-soft">
             永久免费,无需信用卡。
           </p>
 
-          <form class="mt-7 space-y-4" @submit.prevent="submit">
+          <form class="mt-6 space-y-4 sm:mt-7" @submit.prevent="submit">
             <div class="space-y-2">
               <label class="label-slash" for="r-username">用户名</label>
               <Input
@@ -106,7 +106,7 @@ async function submit() {
               class="flex items-start gap-2 rounded-md border-2 border-danger bg-pixel-red/15 p-3 text-[13px] text-ink"
             >
               <AlertCircle class="mt-0.5 h-4 w-4 shrink-0 text-danger" />
-              <span>{{ error }}</span>
+              <span class="min-w-0 break-words">{{ error }}</span>
             </div>
 
             <Button type="submit" size="lg" class="w-full" :disabled="loading">

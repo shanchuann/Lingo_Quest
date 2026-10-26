@@ -39,7 +39,7 @@ function unlockedAt(id: number) {
 
 <template>
   <AppLayout>
-    <section class="container py-12">
+    <section class="container py-8 md:py-12">
       <div class="mx-auto max-w-4xl">
         <header class="flex flex-wrap items-end justify-between gap-6">
           <div>
@@ -64,22 +64,22 @@ function unlockedAt(id: number) {
 
         <div v-if="loading" class="py-16 text-center text-[14px] text-ink-soft">加载中…</div>
 
-        <div v-else class="mt-10 grid gap-[2px] overflow-hidden rounded-md border border-rule bg-rule md:grid-cols-2">
+        <div v-else class="mt-8 grid gap-[2px] overflow-hidden rounded-md border border-rule bg-rule md:mt-10 md:grid-cols-2">
           <article
             v-for="(a, i) in catalog"
             :key="a.id"
-            class="relative bg-paper p-6 transition-colors duration-300 hover:bg-paper-2"
+            class="relative bg-paper p-5 transition-colors duration-300 hover:bg-paper-2 md:p-6"
             :class="unlockedSet.has(a.id) ? '' : 'opacity-55'"
           >
             <div class="flex items-start gap-4">
               <div
-                class="flex h-12 w-12 items-center justify-center rounded-sm"
+                class="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm"
                 :class="unlockedSet.has(a.id) ? swatches[i % swatches.length] + ' text-ink' : 'border border-rule bg-paper-3 text-ink-soft'"
               >
                 <component :is="resolveIcon(a.icon)" class="h-6 w-6" />
               </div>
               <div class="flex-1">
-                <div class="flex items-center gap-2 font-display text-[18px] font-black leading-tight tracking-tight">
+                <div class="flex flex-wrap items-center gap-2 font-display text-[18px] font-black leading-tight tracking-tight">
                   {{ a.title }}
                   <span
                     v-if="unlockedSet.has(a.id)"
@@ -89,7 +89,7 @@ function unlockedAt(id: number) {
                   </span>
                 </div>
                 <p class="mt-2 text-[14px] leading-relaxed text-ink-soft">{{ a.description }}</p>
-                <div class="mt-4 flex items-center gap-4 font-mono text-[11px] uppercase tracking-[0.16em] text-ink-soft">
+                <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] uppercase tracking-[0.16em] text-ink-soft">
                   <span>+{{ a.rewardExp }} xp</span>
                   <span>+{{ a.rewardCoin }} 金币</span>
                   <span v-if="unlockedAt(a.id)" class="text-ink">

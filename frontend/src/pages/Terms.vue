@@ -17,7 +17,7 @@ const sections = [
 
 <template>
   <AppLayout>
-    <section class="container py-16">
+    <section class="container py-10 sm:py-16">
       <div class="mx-auto max-w-3xl">
         <header>
           <div class="label-slash">
@@ -31,19 +31,19 @@ const sections = [
             欢迎来到 Lingo Quest。注册账号、使用服务即表示你已阅读并同意本条款的全部内容。
             条款采用清晰的中文,我们尽量不让你的时间花在解读法律术语上。
           </p>
-          <p class="mt-3 font-mono text-[12px] uppercase tracking-[0.18em] text-ink-faint">
+          <p class="mt-3 font-mono text-[12px] uppercase tracking-[0.18em] text-ink-faint max-sm:tracking-[0.12em]">
             最后更新于 2026 年 6 月 16 日 · 版本 1.0
           </p>
         </header>
 
         <!-- TOC -->
-        <nav class="mt-10 rounded-md border border-rule bg-paper-2 p-5">
+        <nav class="mt-8 rounded-md border border-rule bg-paper-2 p-4 sm:mt-10 sm:p-5">
           <div class="label-slash">目录</div>
           <ol class="mt-3 grid gap-1.5 sm:grid-cols-2">
             <li v-for="(s, i) in sections" :key="s.id" class="text-[13.5px]">
               <a
                 :href="`#${s.id}`"
-                class="inline-flex items-baseline gap-2 text-ink-soft transition-colors hover:text-ink"
+                class="inline-flex items-baseline gap-2 text-ink-soft transition-colors hover:text-ink max-sm:h-10 max-sm:items-center"
               >
                 <span class="font-mono text-[11px] text-ink-faint">{{ String(i + 1).padStart(2, '0') }}</span>
                 {{ s.title }}
@@ -52,8 +52,8 @@ const sections = [
           </ol>
         </nav>
 
-        <article class="mt-14 space-y-14 text-[15px] leading-[1.8] text-ink-soft">
-          <section id="account">
+        <article class="mt-10 space-y-10 break-words text-[15px] leading-[1.8] text-ink-soft sm:mt-14 sm:space-y-14">
+          <section id="account" class="scroll-mt-20 lg:scroll-mt-0">
             <h2 class="font-display text-[24px] font-black tracking-tight text-ink">1. 账号注册与使用</h2>
             <p class="mt-4">
               每位用户应使用真实有效的电子邮箱注册一个账号。账号属于个人,不得出借、出售、共享给他人使用。
@@ -64,7 +64,7 @@ const sections = [
             </p>
           </section>
 
-          <section id="content">
+          <section id="content" class="scroll-mt-20 lg:scroll-mt-0">
             <h2 class="font-display text-[24px] font-black tracking-tight text-ink">2. 内容与知识产权</h2>
             <p class="mt-4">
               Lingo Quest 平台上的词书、题库、棋盘、UI 设计、文案、品牌标识及相关数据库内容,
@@ -75,7 +75,7 @@ const sections = [
             </p>
           </section>
 
-          <section id="virtual">
+          <section id="virtual" class="scroll-mt-20 lg:scroll-mt-0">
             <h2 class="font-display text-[24px] font-black tracking-tight text-ink">3. 虚拟金币与道具</h2>
             <p class="mt-4">
               金币、提示卷、重掷令、装饰道具等虚拟物品仅可在 Lingo Quest 内使用,
@@ -86,7 +86,7 @@ const sections = [
             </p>
           </section>
 
-          <section id="ai">
+          <section id="ai" class="scroll-mt-20 lg:scroll-mt-0">
             <h2 class="font-display text-[24px] font-black tracking-tight text-ink">4. AI 服务说明</h2>
             <p class="mt-4">
               AI 导师由第三方 DeepSeek API 提供算力支持。AI 生成的内容不构成任何形式的官方教学建议、考试参考或职业指导。
@@ -97,7 +97,7 @@ const sections = [
             </p>
           </section>
 
-          <section id="avail">
+          <section id="avail" class="scroll-mt-20 lg:scroll-mt-0">
             <h2 class="font-display text-[24px] font-black tracking-tight text-ink">5. 服务可用性</h2>
             <p class="mt-4">
               我们会尽合理努力维持服务稳定,但下列情况可能造成服务暂时中断且不构成违约:
@@ -105,7 +105,7 @@ const sections = [
             </p>
           </section>
 
-          <section id="prohibit">
+          <section id="prohibit" class="scroll-mt-20 lg:scroll-mt-0">
             <h2 class="font-display text-[24px] font-black tracking-tight text-ink">6. 禁止行为</h2>
             <p class="mt-4">使用 Lingo Quest 时,你同意不:</p>
             <ul class="mt-3 list-inside list-disc space-y-2 pl-2">
@@ -117,7 +117,7 @@ const sections = [
             </ul>
           </section>
 
-          <section id="liability">
+          <section id="liability" class="scroll-mt-20 lg:scroll-mt-0">
             <h2 class="font-display text-[24px] font-black tracking-tight text-ink">7. 责任限制</h2>
             <p class="mt-4">
               在适用法律允许的最大范围内,Lingo Quest 不对因使用或无法使用本服务而产生的间接、附带、惩罚性损失承担责任,
@@ -125,7 +125,7 @@ const sections = [
             </p>
           </section>
 
-          <section id="changes">
+          <section id="changes" class="scroll-mt-20 lg:scroll-mt-0">
             <h2 class="font-display text-[24px] font-black tracking-tight text-ink">8. 条款的变更</h2>
             <p class="mt-4">
               本条款可能随产品迭代而更新。重大变更将在页面顶部或通过站内通知提前 7 天告知你。
@@ -133,7 +133,7 @@ const sections = [
             </p>
           </section>
 
-          <section id="contact">
+          <section id="contact" class="scroll-mt-20 lg:scroll-mt-0">
             <h2 class="font-display text-[24px] font-black tracking-tight text-ink">9. 联系方式与适用法律</h2>
             <p class="mt-4">
               本条款受中华人民共和国法律管辖。任何因本条款或本服务产生的争议,

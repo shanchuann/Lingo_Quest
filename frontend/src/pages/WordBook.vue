@@ -95,11 +95,11 @@ async function setCurrent() {
 
 <template>
   <AppLayout>
-    <section class="container py-12">
+    <section class="container py-8 md:py-12">
       <div class="mx-auto max-w-4xl">
         <div class="mb-6">
           <button
-            class="inline-flex items-center gap-2 text-[13px] text-ink-soft underline decoration-rule-soft underline-offset-[6px] transition-colors hover:text-ink hover:decoration-ink focus-ring rounded-sm"
+            class="inline-flex min-h-[40px] items-center gap-2 text-[13px] text-ink-soft underline decoration-rule-soft underline-offset-[6px] transition-colors hover:text-ink hover:decoration-ink focus-ring rounded-sm sm:min-h-0"
             @click="router.push('/wordbooks')"
           >
             <ArrowLeft class="h-3.5 w-3.5" />
@@ -115,7 +115,7 @@ async function setCurrent() {
         <template v-else>
           <!-- Book header -->
           <header class="mb-8 grid gap-6 lg:grid-cols-[280px_1fr]">
-            <div class="relative overflow-hidden rounded-md border border-rule" :class="swatchFor(book.coverColor)">
+            <div class="relative w-full max-w-[280px] overflow-hidden rounded-md border border-rule" :class="swatchFor(book.coverColor)">
               <div class="flex aspect-[3/4] flex-col justify-between p-6">
                 <div class="font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink/70">
                   {{ book.code }} · {{ book.totalWords }} 词
@@ -132,7 +132,7 @@ async function setCurrent() {
             <div class="flex flex-col gap-6">
               <div>
                 <div class="label-slash">学习进度</div>
-                <div class="mt-3 flex items-baseline gap-2 font-display text-[44px] font-black leading-none tracking-tight">
+                <div class="mt-3 flex items-baseline gap-2 font-display text-[36px] sm:text-[44px] font-black leading-none tracking-tight">
                   {{ progressPct }}%
                   <span class="font-mono text-[12px] text-ink-soft">
                     {{ book.masteredCount ?? 0 }} / {{ book.totalWords }}
@@ -166,7 +166,7 @@ async function setCurrent() {
           <div class="mb-4 flex flex-wrap items-center gap-1 rounded-md border border-rule bg-paper p-1">
             <Filter class="ml-2 h-3.5 w-3.5 text-ink-soft" />
             <button
-              class="inline-flex h-8 items-center gap-1.5 rounded-sm px-3 text-[12.5px] transition-colors duration-200 focus-ring"
+              class="inline-flex h-8 min-h-[40px] items-center gap-1.5 rounded-sm px-3 text-[12.5px] transition-colors duration-200 focus-ring sm:min-h-0"
               :class="filter === 'ALL' ? 'bg-ink text-paper font-medium' : 'text-ink-soft hover:text-ink'"
               @click="filter = 'ALL'"
             >
@@ -175,7 +175,7 @@ async function setCurrent() {
             <button
               v-for="(meta, st) in stateMap"
               :key="st"
-              class="inline-flex h-8 items-center gap-1.5 rounded-sm px-3 text-[12.5px] transition-colors duration-200 focus-ring"
+              class="inline-flex h-8 min-h-[40px] items-center gap-1.5 rounded-sm px-3 text-[12.5px] transition-colors duration-200 focus-ring sm:min-h-0"
               :class="filter === st ? 'bg-ink text-paper font-medium' : 'text-ink-soft hover:text-ink'"
               @click="filter = st as WordState"
             >
@@ -193,13 +193,13 @@ async function setCurrent() {
             >
               <div class="grid gap-4 lg:grid-cols-[1fr_auto]">
                 <div>
-                  <div class="flex items-baseline gap-3">
-                    <span class="font-display text-[26px] font-black leading-none tracking-tight">{{ w.word }}</span>
-                    <span class="font-mono text-[12px] text-ink-soft">{{ w.phonetic }} · {{ w.partOfSpeech }}</span>
+                  <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <span class="min-w-0 break-words font-display text-[26px] font-black leading-none tracking-tight">{{ w.word }}</span>
+                    <span class="min-w-0 break-words font-mono text-[12px] text-ink-soft">{{ w.phonetic }} · {{ w.partOfSpeech }}</span>
                   </div>
                   <p class="mt-3 text-[15px] text-ink">{{ w.meaningZh }}</p>
-                  <p v-if="w.meaningEn" class="mt-1 text-[12.5px] italic text-ink-soft">{{ w.meaningEn }}</p>
-                  <p v-if="w.exampleEn" class="mt-3 rounded-sm border-l-0 border border-rule-soft bg-paper-2 p-2.5 text-[13.5px] text-ink">
+                  <p v-if="w.meaningEn" class="mt-1 break-words text-[12.5px] italic text-ink-soft">{{ w.meaningEn }}</p>
+                  <p v-if="w.exampleEn" class="mt-3 break-words rounded-sm border-l-0 border border-rule-soft bg-paper-2 p-2.5 text-[13.5px] text-ink">
                     <span class="block">{{ w.exampleEn }}</span>
                     <span v-if="w.exampleZh" class="mt-1 block text-ink-soft">{{ w.exampleZh }}</span>
                   </p>
@@ -211,7 +211,7 @@ async function setCurrent() {
                   </div>
                   <div class="inline-flex rounded-md border border-rule bg-paper p-0.5">
                     <button
-                      class="inline-flex h-7 items-center gap-1 rounded-sm px-2 text-[11.5px] transition-colors focus-ring"
+                      class="inline-flex h-7 min-h-[40px] items-center gap-1 rounded-sm px-2 text-[11.5px] transition-colors focus-ring sm:min-h-0"
                       :class="w.state === 'LEARNING' ? 'bg-warning/20 text-ink font-medium' : 'text-ink-soft hover:text-ink'"
                       :disabled="marking === w.id"
                       @click="mark(w, 'LEARNING')"
@@ -219,7 +219,7 @@ async function setCurrent() {
                       <Sparkles class="h-3 w-3" /> 学习
                     </button>
                     <button
-                      class="inline-flex h-7 items-center gap-1 rounded-sm px-2 text-[11.5px] transition-colors focus-ring"
+                      class="inline-flex h-7 min-h-[40px] items-center gap-1 rounded-sm px-2 text-[11.5px] transition-colors focus-ring sm:min-h-0"
                       :class="w.state === 'MASTERED' ? 'bg-pixel-green/40 text-ink font-medium' : 'text-ink-soft hover:text-ink'"
                       :disabled="marking === w.id"
                       @click="mark(w, 'MASTERED')"

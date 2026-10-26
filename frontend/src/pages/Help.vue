@@ -136,7 +136,7 @@ function toggle(key: string) {
 
 <template>
   <AppLayout>
-    <section class="container py-16">
+    <section class="container py-10 sm:py-16">
       <div class="mx-auto max-w-3xl">
         <header>
           <div class="label-slash">
@@ -151,14 +151,14 @@ function toggle(key: string) {
           </p>
         </header>
 
-        <div class="mt-12 space-y-10">
-          <section v-for="g in groups" :key="g.id" :id="g.id">
+        <div class="mt-8 space-y-8 sm:mt-12 sm:space-y-10">
+          <section v-for="g in groups" :key="g.id" :id="g.id" class="scroll-mt-20 lg:scroll-mt-0">
             <header class="mb-5 flex items-center gap-3 border-b border-rule-soft pb-3">
-              <span class="inline-flex h-9 w-9 items-center justify-center rounded-sm bg-pixel-green text-ink">
+              <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-pixel-green text-ink">
                 <component :is="g.icon" class="h-4 w-4" />
               </span>
-              <h2 class="font-display text-[22px] font-black tracking-tight text-ink">{{ g.title }}</h2>
-              <span class="ml-auto font-mono text-[11px] uppercase tracking-[0.18em] text-ink-faint">
+              <h2 class="min-w-0 font-display text-[22px] font-black leading-tight tracking-tight text-ink">{{ g.title }}</h2>
+              <span class="ml-auto shrink-0 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-faint">
                 {{ g.items.length }} 个问题
               </span>
             </header>
@@ -169,13 +169,13 @@ function toggle(key: string) {
                 :key="`${g.id}-${idx}`"
               >
                 <button
-                  class="flex w-full items-start gap-3 py-4 text-left transition-colors hover:bg-paper-2 focus-ring"
+                  class="flex w-full items-start gap-2.5 py-4 text-left transition-colors hover:bg-paper-2 focus-ring sm:gap-3"
                   @click="toggle(`${g.id}-${idx}`)"
                 >
                   <span class="mt-1 font-mono text-[11px] text-ink-faint">
                     Q{{ String(idx + 1).padStart(2, '0') }}
                   </span>
-                  <span class="flex-1 font-display text-[15.5px] font-bold leading-snug text-ink">
+                  <span class="min-w-0 flex-1 break-words font-display text-[15.5px] font-bold leading-snug text-ink">
                     {{ item.q }}
                   </span>
                   <ChevronDown
@@ -191,7 +191,7 @@ function toggle(key: string) {
                 >
                   <div
                     v-if="openItems.has(`${g.id}-${idx}`)"
-                    class="pb-5 pl-[40px] pr-8 text-[14.5px] leading-[1.75] text-ink-soft"
+                    class="pb-5 pl-8 pr-4 text-[14.5px] leading-[1.75] text-ink-soft sm:pl-[40px] sm:pr-8"
                   >
                     {{ item.a }}
                   </div>
@@ -202,7 +202,7 @@ function toggle(key: string) {
         </div>
 
         <!-- Contact CTA -->
-        <div class="mt-16 rounded-md border-2 border-ink bg-pixel-amber/30 p-6">
+        <div class="mt-12 rounded-md border-2 border-ink bg-pixel-amber/30 p-5 sm:mt-16 sm:p-6">
           <div class="label-slash">没找到答案?</div>
           <h3 class="mt-3 font-display text-[22px] font-black leading-tight tracking-tight text-ink">
             直接告诉我们,会优先排进路线图。

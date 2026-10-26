@@ -37,7 +37,7 @@ const agenda: Array<[string, string, string]> = [
   <AppLayout>
     <!-- ─────────────────── HERO ─────────────────── -->
     <section class="border-b border-rule">
-      <div class="container grid gap-x-10 gap-y-12 py-16 lg:grid-cols-12 lg:py-24">
+      <div class="container grid gap-x-10 gap-y-10 py-10 sm:gap-y-12 sm:py-16 lg:grid-cols-12 lg:py-24">
         <!-- Headline -->
         <div class="lg:col-span-9">
           <div class="label-slash">
@@ -48,27 +48,27 @@ const agenda: Array<[string, string, string]> = [
           <h1 class="mt-6 max-w-[18ch] font-display text-display-xl font-black leading-[0.92] tracking-tight text-ink">
             把英语
             <span class="relative inline-block">
-              <span class="relative z-10 text-ink">当成棋盘游戏来玩。</span>
-              <span aria-hidden="true" class="absolute -bottom-2 left-0 -z-0 inline-block h-3 w-full bg-pixel-green/60" />
+              <span class="relative z-10 text-ink max-sm:bg-gradient-to-t max-sm:from-pixel-green/60 max-sm:from-20% max-sm:to-transparent max-sm:to-20%">当成棋盘游戏来玩。</span>
+              <span aria-hidden="true" class="absolute -bottom-2 left-0 -z-0 inline-block h-3 w-full bg-pixel-green/60 max-sm:hidden" />
             </span>
           </h1>
 
-          <p class="mt-8 max-w-[40ch] text-[17px] leading-[1.7] text-ink-soft text-pretty">
+          <p class="mt-6 max-w-[40ch] text-[17px] leading-[1.7] text-ink-soft text-pretty sm:mt-8">
             掷骰子 · 落在一格未知的题面上 · 让一位小型 AI 导师替你讲解。
             它先是一款棋盘游戏,然后才是一款学习应用 —— 因为没有人围着篝火讲过测验的故事。
           </p>
 
-          <div class="mt-9 flex flex-wrap items-center gap-3">
+          <div class="mt-8 flex flex-wrap items-center gap-3 sm:mt-9">
             <RouterLink
               to="/register"
-              class="inline-flex h-12 items-center gap-2 rounded-md bg-ink px-6 text-[15px] font-medium text-paper transition-colors duration-300 hover:bg-ink-soft focus-ring"
+              class="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-ink px-6 text-[15px] font-medium text-paper transition-colors duration-300 hover:bg-ink-soft focus-ring sm:w-auto"
             >
               开始我的旅程<span class="font-mono text-paper/60">/</span>
               <MoveRight class="h-4 w-4" />
             </RouterLink>
             <RouterLink
               to="/tutor"
-              class="inline-flex h-12 items-center gap-2 rounded-md border border-rule bg-paper px-6 text-[15px] font-medium text-ink transition-colors duration-300 hover:bg-paper-3 focus-ring"
+              class="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md border border-rule bg-paper px-6 text-[15px] font-medium text-ink transition-colors duration-300 hover:bg-paper-3 focus-ring sm:w-auto"
             >
               先试试 AI 导师<span class="font-mono text-ink-faint">/</span>
               <ArrowUpRight class="h-4 w-4" />
@@ -76,7 +76,7 @@ const agenda: Array<[string, string, string]> = [
             <a
               href="https://github.com/shanchuann/Lingo_Quest"
               target="_blank"
-              class="ml-1 inline-flex items-center gap-1.5 text-[13.5px] text-ink-soft underline decoration-rule-soft underline-offset-[6px] transition-colors hover:text-ink hover:decoration-ink focus-ring rounded-sm"
+              class="ml-0 inline-flex items-center gap-1.5 text-[13.5px] text-ink-soft underline decoration-rule-soft underline-offset-[6px] transition-colors hover:text-ink hover:decoration-ink focus-ring rounded-sm sm:ml-1"
             >
               <Github class="h-3.5 w-3.5" />
               在 GitHub 上看源码
@@ -151,11 +151,11 @@ const agenda: Array<[string, string, string]> = [
     <!-- ─────────────────── FACT STRIP ─────────────────── -->
     <section class="border-b border-rule">
       <div class="container grid grid-cols-2 divide-rule-soft md:grid-cols-4 md:divide-x">
-        <div class="px-2 py-8 md:px-7">
+        <div class="px-2 py-6 md:px-7 md:py-8">
           <div class="font-display text-[40px] font-black leading-none tracking-tight md:text-[52px]">30</div>
           <div class="mt-2 text-[12.5px] text-ink-soft">棋盘格数</div>
         </div>
-        <div class="px-2 py-8 md:px-7">
+        <div class="px-2 py-6 md:px-7 md:py-8">
           <div class="font-display text-[40px] font-black leading-none tracking-tight md:text-[52px]">
             8<span class="ml-2 inline-flex h-7 align-middle">
               <span class="h-7 w-2 bg-pixel-green" />
@@ -170,11 +170,11 @@ const agenda: Array<[string, string, string]> = [
           </div>
           <div class="mt-2 text-[12.5px] text-ink-soft">格子类型</div>
         </div>
-        <div class="px-2 py-8 md:px-7">
+        <div class="px-2 py-6 md:px-7 md:py-8">
           <div class="font-display text-[40px] font-black leading-none tracking-tight md:text-[52px]">Lv1→5</div>
           <div class="mt-2 text-[12.5px] text-ink-soft">经验等级曲线</div>
         </div>
-        <div class="px-2 py-8 md:px-7">
+        <div class="px-2 py-6 md:px-7 md:py-8">
           <div class="font-display text-[40px] font-black leading-none tracking-tight md:text-[52px]">&lt;3s</div>
           <div class="mt-2 text-[12.5px] text-ink-soft">AI 响应预算</div>
         </div>
@@ -183,7 +183,7 @@ const agenda: Array<[string, string, string]> = [
 
     <!-- ─────────────────── THREE PILLARS ─────────────────── -->
     <section class="border-b border-rule">
-      <div class="container py-20">
+      <div class="container py-12 sm:py-20">
         <div class="grid gap-y-10 lg:grid-cols-12">
           <div class="lg:col-span-5">
             <div class="label-slash">三个立场</div>
@@ -199,11 +199,11 @@ const agenda: Array<[string, string, string]> = [
           </p>
         </div>
 
-        <ol class="mt-14 grid grid-cols-1 gap-[2px] overflow-hidden rounded-md border border-rule bg-rule md:grid-cols-3">
+        <ol class="mt-8 grid grid-cols-1 gap-[2px] overflow-hidden rounded-md border border-rule bg-rule sm:mt-14 md:grid-cols-3">
           <li
             v-for="(p, i) in pillars"
             :key="p.k"
-            class="group relative flex flex-col gap-5 bg-paper p-6 transition-colors duration-300 hover:bg-paper-2"
+            class="group relative flex flex-col gap-5 bg-paper p-5 transition-colors duration-300 hover:bg-paper-2 sm:p-6"
           >
             <div class="flex items-start justify-between">
               <span class="font-mono text-[12px] tracking-tight text-ink-soft">
@@ -222,7 +222,7 @@ const agenda: Array<[string, string, string]> = [
 
     <!-- ─────────────────── AGENDA ─────────────────── -->
     <section class="border-b border-rule">
-      <div class="container py-20">
+      <div class="container py-12 sm:py-20">
         <div class="grid gap-y-8 lg:grid-cols-12">
           <div class="lg:col-span-4">
             <div class="label-slash">前五分钟</div>
@@ -235,11 +235,11 @@ const agenda: Array<[string, string, string]> = [
             <li
               v-for="[time, what, where] in agenda"
               :key="time"
-              class="grid grid-cols-[80px_1fr_auto] items-baseline gap-6 py-4"
+              class="grid grid-cols-[auto_1fr] items-baseline gap-x-3 gap-y-1 py-4 sm:grid-cols-[80px_1fr_auto] sm:gap-6"
             >
               <span class="font-mono text-[13px] text-ink-faint">{{ time }}</span>
-              <span class="text-[15px] text-ink">{{ what }}</span>
-              <span class="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-soft">[ {{ where }} ]</span>
+              <span class="min-w-0 break-words text-[15px] text-ink">{{ what }}</span>
+              <span class="col-start-2 font-mono text-[11px] uppercase tracking-[0.16em] text-ink-soft sm:col-start-3">[ {{ where }} ]</span>
             </li>
           </ol>
         </div>
@@ -248,8 +248,8 @@ const agenda: Array<[string, string, string]> = [
 
     <!-- ─────────────────── CTA STRIP ─────────────────── -->
     <section>
-      <div class="container py-20">
-        <div class="grid items-center gap-8 md:grid-cols-[1fr_auto]">
+      <div class="container py-12 sm:py-20">
+        <div class="grid items-center gap-6 md:grid-cols-[1fr_auto] md:gap-8">
           <div>
             <div class="label-slash">随时开始</div>
             <p class="mt-5 max-w-[20ch] font-display text-display-lg font-black leading-[0.98] tracking-tight">
@@ -257,17 +257,17 @@ const agenda: Array<[string, string, string]> = [
               <span class="block text-pixel-green/90">该你掷骰子了。</span>
             </p>
           </div>
-          <div class="flex flex-wrap items-center gap-3">
+          <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
             <RouterLink
               to="/register"
-              class="inline-flex h-12 items-center gap-2 rounded-md bg-ink px-7 text-[15px] font-medium text-paper transition-colors duration-300 hover:bg-ink-soft focus-ring"
+              class="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-ink px-7 text-[15px] font-medium text-paper transition-colors duration-300 hover:bg-ink-soft focus-ring sm:w-auto"
             >
               创建账号<span class="font-mono text-paper/60">/</span>
               <MoveRight class="h-4 w-4" />
             </RouterLink>
             <RouterLink
               to="/login"
-              class="inline-flex h-12 items-center gap-2 rounded-md border border-rule bg-paper px-6 text-[15px] font-medium text-ink transition-colors hover:bg-paper-3 focus-ring"
+              class="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md border border-rule bg-paper px-6 text-[15px] font-medium text-ink transition-colors hover:bg-paper-3 focus-ring sm:w-auto"
             >
               我已有账号<span class="font-mono text-ink-faint">/</span>
             </RouterLink>

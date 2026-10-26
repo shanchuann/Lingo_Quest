@@ -90,9 +90,9 @@ const typeMap: Record<string, string> = {
       class="fixed inset-0 z-50 flex items-end justify-center bg-ink/30 sm:items-center sm:px-4"
       @click.self="emit('close')"
     >
-      <div class="w-full max-w-xl rounded-md border-2 border-ink bg-paper shadow-page sm:my-8">
+      <div class="max-h-[92dvh] w-full max-w-xl overflow-y-auto rounded-t-md border-2 border-ink bg-paper shadow-page sm:my-8 sm:rounded-md">
         <!-- ribbon strip -->
-        <div class="flex items-center justify-between border-b-2 border-ink px-6 py-3 text-[12px]">
+        <div class="flex items-center justify-between border-b-2 border-ink px-4 py-3 text-[12px] sm:px-6">
           <span class="text-ink-soft">
             <span class="text-ink font-medium">{{ typeMap[question.type] ?? question.type }}</span>
             <span class="mx-2 text-ink-faint">·</span>
@@ -107,9 +107,9 @@ const typeMap: Record<string, string> = {
           </button>
         </div>
 
-        <div class="px-6 pb-6 pt-5">
+        <div class="px-4 pb-5 pt-4 sm:px-6 sm:pb-6 sm:pt-5">
           <div class="label-slash mb-3">题面</div>
-          <h2 class="font-display text-[26px] font-black leading-[1.15] tracking-tight text-balance text-ink">
+          <h2 class="font-display text-[22px] font-black leading-[1.15] tracking-tight text-balance text-ink sm:text-[26px]">
             {{ question.content }}
           </h2>
 
@@ -117,7 +117,7 @@ const typeMap: Record<string, string> = {
             <label
               v-for="(opt, i) in question.options"
               :key="opt"
-              class="grid cursor-pointer grid-cols-[28px_1fr_20px] items-center gap-3 rounded-sm border bg-paper-2 px-3.5 py-3 text-[15px] text-ink transition-colors duration-200 hover:bg-paper-3"
+              class="grid cursor-pointer grid-cols-[24px_1fr_16px] items-center gap-2.5 rounded-sm border bg-paper-2 px-3 py-2.5 text-[14px] text-ink transition-colors duration-200 hover:bg-paper-3 sm:grid-cols-[28px_1fr_20px] sm:gap-3 sm:px-3.5 sm:py-3 sm:text-[15px]"
               :class="selected === opt ? 'border-2 border-ink bg-pixel-green/35' : 'border-rule-soft'"
             >
               <span
@@ -137,8 +137,8 @@ const typeMap: Record<string, string> = {
             <Input v-model="free" placeholder="在此输入…" />
           </div>
 
-          <div class="mt-7 flex items-center justify-between gap-3">
-            <div class="flex items-center gap-2">
+          <div class="mt-6 flex flex-col gap-3 sm:mt-7 sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex flex-wrap items-center gap-2">
               <Button
                 v-if="(hintCount ?? 0) > 0 && !hint"
                 size="sm"
@@ -162,9 +162,9 @@ const typeMap: Record<string, string> = {
                 越格符({{ skipCount }})
               </Button>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex w-full items-center gap-2 sm:w-auto">
               <Button variant="ghost" :disabled="loading" @click="emit('close')">关闭</Button>
-              <Button :disabled="loading || (question.options?.length ? !selected : !free)" @click="submit">
+              <Button class="flex-1 sm:flex-none" :disabled="loading || (question.options?.length ? !selected : !free)" @click="submit">
                 <Loader2 v-if="loading" class="h-4 w-4 animate-spin" />
                 <MoveRight v-else class="h-4 w-4" />
                 {{ loading ? '提交中…' : '提交答案' }}

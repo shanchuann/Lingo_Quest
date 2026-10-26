@@ -65,7 +65,7 @@ function progressOf(b: WordBookSummary) {
 
 <template>
   <AppLayout>
-    <section class="container py-12">
+    <section class="container py-8 md:py-12">
       <div class="mx-auto max-w-5xl">
         <header class="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -98,12 +98,12 @@ function progressOf(b: WordBookSummary) {
           </div>
         </Transition>
 
-        <div v-if="loading" class="mt-10 rounded-md border border-rule bg-paper p-10 text-center text-[13.5px] text-ink-soft">
+        <div v-if="loading" class="mt-8 rounded-md border border-rule bg-paper p-8 text-center text-[13.5px] text-ink-soft md:mt-10 md:p-10">
           <Loader2 class="mx-auto mb-2 h-5 w-5 animate-spin" />
           加载词书目录中…
         </div>
 
-        <div v-else class="mt-10 space-y-12">
+        <div v-else class="mt-8 space-y-8 md:mt-10 md:space-y-12">
           <section v-for="g in grouped" :key="g.level">
             <div class="mb-5 flex items-baseline justify-between">
               <h2 class="font-display text-[22px] font-black leading-tight tracking-tight">
@@ -121,7 +121,7 @@ function progressOf(b: WordBookSummary) {
               >
                 <!-- Cover -->
                 <div class="relative overflow-hidden rounded-sm border border-rule" :class="swatchFor(b.coverColor)">
-                  <div class="aspect-[3/1] p-4">
+                  <div class="aspect-[5/2] p-4 sm:aspect-[3/1]">
                     <div class="font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink/70">
                       {{ b.code }}
                     </div>
@@ -151,7 +151,7 @@ function progressOf(b: WordBookSummary) {
                 <div class="flex items-center gap-2">
                   <RouterLink
                     :to="`/wordbooks/${b.id}`"
-                    class="inline-flex h-9 flex-1 items-center justify-center gap-2 rounded-md border border-rule bg-paper text-[13px] font-medium text-ink transition-colors hover:bg-paper-3 focus-ring"
+                    class="inline-flex h-9 min-h-[40px] flex-1 items-center justify-center gap-2 rounded-md border border-rule bg-paper text-[13px] font-medium text-ink transition-colors hover:bg-paper-3 focus-ring sm:min-h-0"
                   >
                     <BookOpen class="h-3.5 w-3.5" />
                     翻阅
@@ -159,6 +159,7 @@ function progressOf(b: WordBookSummary) {
                   </RouterLink>
                   <Button
                     size="sm"
+                    class="min-h-[40px] sm:min-h-0"
                     :variant="auth.user?.currentBookId === b.id ? 'bone' : 'pop'"
                     :disabled="selecting === b.id || auth.user?.currentBookId === b.id"
                     @click="selectAsCurrent(b)"

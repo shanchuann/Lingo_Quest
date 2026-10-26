@@ -3,19 +3,19 @@ import { RouterLink } from 'vue-router'
 </script>
 
 <template>
-  <footer class="mt-24 border-t border-rule bg-paper">
+  <footer class="mt-12 border-t border-rule bg-paper md:mt-24">
     <!-- 仿 Universe 底部超大字标 -->
-    <div class="container relative overflow-hidden pb-3 pt-12">
+    <div class="container relative overflow-hidden pb-3 pt-8 md:pt-12">
       <h2
         aria-hidden="true"
-        class="select-none font-display text-mark font-black uppercase tracking-tight text-ink/95 leading-[0.82]"
+        class="select-none break-words font-display text-[clamp(1.75rem,10vw,11rem)] font-black uppercase leading-[0.82] tracking-tight text-ink/95 md:text-mark"
         style="font-stretch: 75%;"
       >
         LingoQuest<span class="text-pixel-green">·</span><span class="text-ink-faint">26</span>
       </h2>
-      <div class="mt-6 flex flex-wrap items-baseline justify-between gap-4 border-t border-rule pt-4 text-[12.5px] text-ink-soft">
-        <span class="font-mono text-[11px] uppercase tracking-[0.18em]">© 2026 LINGO QUEST · ALL RIGHTS RESERVED</span>
-        <nav class="flex items-center gap-4">
+      <div class="mt-6 flex flex-col items-start justify-between gap-4 border-t border-rule pt-4 text-[12.5px] text-ink-soft sm:flex-row sm:flex-wrap sm:items-baseline">
+        <span class="font-mono text-[10px] uppercase leading-relaxed tracking-[0.14em] sm:text-[11px] sm:tracking-[0.18em]">© 2026 LINGO QUEST · ALL RIGHTS RESERVED</span>
+        <nav class="flex flex-wrap items-center gap-x-4 gap-y-2">
           <RouterLink to="/terms" class="transition-colors hover:text-ink">服务条款</RouterLink>
           <span class="text-ink-faint">/</span>
           <RouterLink to="/privacy" class="transition-colors hover:text-ink">隐私政策</RouterLink>

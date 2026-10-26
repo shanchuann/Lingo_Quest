@@ -17,7 +17,7 @@ const sections = [
 
 <template>
   <AppLayout>
-    <section class="container py-16">
+    <section class="container py-10 sm:py-16">
       <div class="mx-auto max-w-3xl">
         <header>
           <div class="label-slash">
@@ -31,18 +31,18 @@ const sections = [
             学习这件事本身已经够费心神,我们不想让"数据怎么被用"也成为你的负担。
             下面这份隐私政策说明了 Lingo Quest 在你的学习过程中会接触到哪些数据,以及它们都流向了哪里。
           </p>
-          <p class="mt-3 font-mono text-[12px] uppercase tracking-[0.18em] text-ink-faint">
+          <p class="mt-3 font-mono text-[12px] uppercase tracking-[0.18em] text-ink-faint max-sm:tracking-[0.12em]">
             最后更新于 2026 年 6 月 16 日 · 版本 1.0
           </p>
         </header>
 
-        <nav class="mt-10 rounded-md border border-rule bg-paper-2 p-5">
+        <nav class="mt-8 rounded-md border border-rule bg-paper-2 p-4 sm:mt-10 sm:p-5">
           <div class="label-slash">目录</div>
           <ol class="mt-3 grid gap-1.5 sm:grid-cols-2">
             <li v-for="(s, i) in sections" :key="s.id" class="text-[13.5px]">
               <a
                 :href="`#${s.id}`"
-                class="inline-flex items-baseline gap-2 text-ink-soft transition-colors hover:text-ink"
+                class="inline-flex items-baseline gap-2 text-ink-soft transition-colors hover:text-ink max-sm:h-10 max-sm:items-center"
               >
                 <span class="font-mono text-[11px] text-ink-faint">{{ String(i + 1).padStart(2, '0') }}</span>
                 {{ s.title }}
@@ -51,8 +51,8 @@ const sections = [
           </ol>
         </nav>
 
-        <article class="mt-14 space-y-14 text-[15px] leading-[1.8] text-ink-soft">
-          <section id="collect">
+        <article class="mt-10 space-y-10 break-words text-[15px] leading-[1.8] text-ink-soft sm:mt-14 sm:space-y-14">
+          <section id="collect" class="scroll-mt-20 lg:scroll-mt-0">
             <h2 class="font-display text-[24px] font-black tracking-tight text-ink">1. 我们收集的信息</h2>
             <p class="mt-4">为了让你能登录、玩棋盘、查看战绩,Lingo Quest 会收集以下三类数据:</p>
             <ul class="mt-3 list-inside list-disc space-y-2 pl-2">
@@ -68,7 +68,7 @@ const sections = [
             </ul>
           </section>
 
-          <section id="use">
+          <section id="use" class="scroll-mt-20 lg:scroll-mt-0">
             <h2 class="font-display text-[24px] font-black tracking-tight text-ink">2. 信息如何被使用</h2>
             <p class="mt-4">
               我们仅在以下场景使用你的数据:为你呈现个性化的棋盘体验、生成 AI 导师的回答、计算正确率趋势与排行榜、向你发送账号安全相关通知。
@@ -79,7 +79,7 @@ const sections = [
             </p>
           </section>
 
-          <section id="third">
+          <section id="third" class="scroll-mt-20 lg:scroll-mt-0">
             <h2 class="font-display text-[24px] font-black tracking-tight text-ink">3. 第三方服务</h2>
             <p class="mt-4">
               当你使用 AI 导师功能(语法纠错、单词讲解)时,你输入的文本会以 HTTPS 加密形式发送至
@@ -89,7 +89,7 @@ const sections = [
             </p>
           </section>
 
-          <section id="cookies">
+          <section id="cookies" class="scroll-mt-20 lg:scroll-mt-0">
             <h2 class="font-display text-[24px] font-black tracking-tight text-ink">4. Cookie 与本地存储</h2>
             <p class="mt-4">
               Lingo Quest 不使用任何第三方追踪 Cookie。
@@ -98,7 +98,7 @@ const sections = [
             </p>
           </section>
 
-          <section id="security">
+          <section id="security" class="scroll-mt-20 lg:scroll-mt-0">
             <h2 class="font-display text-[24px] font-black tracking-tight text-ink">5. 数据安全</h2>
             <p class="mt-4">我们在多个层面保护你的数据:</p>
             <ul class="mt-3 list-inside list-disc space-y-2 pl-2">
@@ -110,7 +110,7 @@ const sections = [
             </ul>
           </section>
 
-          <section id="rights">
+          <section id="rights" class="scroll-mt-20 lg:scroll-mt-0">
             <h2 class="font-display text-[24px] font-black tracking-tight text-ink">6. 你的权利</h2>
             <p class="mt-4">作为数据主体,你随时可以:</p>
             <ul class="mt-3 list-inside list-disc space-y-2 pl-2">
@@ -121,7 +121,7 @@ const sections = [
             </ul>
           </section>
 
-          <section id="retention">
+          <section id="retention" class="scroll-mt-20 lg:scroll-mt-0">
             <h2 class="font-display text-[24px] font-black tracking-tight text-ink">7. 数据的保留期</h2>
             <p class="mt-4">
               账号活跃期间,我们持续保留你的学习数据以便提供服务。
@@ -130,7 +130,7 @@ const sections = [
             </p>
           </section>
 
-          <section id="minors">
+          <section id="minors" class="scroll-mt-20 lg:scroll-mt-0">
             <h2 class="font-display text-[24px] font-black tracking-tight text-ink">8. 未成年人保护</h2>
             <p class="mt-4">
               Lingo Quest 面向英语学习者开放,内容包含小学等级的词书。若你是不满 14 周岁的儿童,
@@ -138,7 +138,7 @@ const sections = [
             </p>
           </section>
 
-          <section id="contact">
+          <section id="contact" class="scroll-mt-20 lg:scroll-mt-0">
             <h2 class="font-display text-[24px] font-black tracking-tight text-ink">9. 隐私问题的反馈渠道</h2>
             <p class="mt-4">
               对本政策有疑问、希望行使数据权利,或发现可能的数据泄露,请通过
